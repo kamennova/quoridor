@@ -1,25 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState} from "react";
+import {GameMenu} from "./GameMenu";
+import {Modes} from "./constants";
+import {Game} from "./Game";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [ showNewGameMenu, setShowNewGameMenu ] = useState(true);
+
+    // Game state
+    const [ isGameOn, setIsGameOn ] = useState(false);
+    const [ mode, setMode ] = useState(Modes.WithComputer);
+
+    const onStart = (mode) => {
+        console.log(mode);
+        setMode(mode);
+        setIsGameOn(true);
+    };
+
+    return (
+        <div className="App">
+            <header className="App-header">
+                Quoridor
+            </header>
+
+            {!isGameOn && <button className="btn primary" onClick={() => setShowNewGameMenu(true)}>New game</button>}
+            {isGameOn && <Game mode={mode}/>}
+
+            {showNewGameMenu && <GameMenu onStart={onStart}/>}
+        </div>
+    );
+};
 
 export default App;

@@ -1,0 +1,10 @@
+- highlight marker that should make move - 1
+- render walls - 2
+- wall move - 3
+- request other players move - 1
+- requests function - 2
+- tell user that move is wrong - 1
+
+???
+
+- finish game
