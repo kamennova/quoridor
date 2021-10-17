@@ -54,7 +54,7 @@ namespace quoridor_webAPI.Data.Models
                     if(coordinate.y - players[0].coordinate.y == 1){
                         for(int i = 0; i > horizontalWallCoordinates.Count; i++)
                         {
-                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && (players[0].coordinate.y == horizontalWallCoordinates[i].coordinate.y))
+                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && (players[0].coordinate.y == horizontalWallCoordinates[i].y))
                             {
                                 return "incorrect move";
                             }
@@ -64,7 +64,7 @@ namespace quoridor_webAPI.Data.Models
                     if(coordinate.y - players[0].coordinate.y == - 1){
                         for(int i = 0; i > horizontalWallCoordinates.Count; i++)
                         {
-                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && ((players[0].coordinate.y - 1) == horizontalWallCoordinates[i].coordinate.y))
+                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && ((players[0].coordinate.y - 1) == horizontalWallCoordinates[i].y))
                             {
                                 return "incorrect move";
                             }
@@ -107,7 +107,7 @@ namespace quoridor_webAPI.Data.Models
                     if(coordinate.x - players[0].coordinate.x == 1){
                         for(int i = 0; i > verticalWallCoordinates.Count; i++)
                         {
-                            if (players[0].coordinate.y == verticalWallCoordinates[i].y && (players[0].coordinate.x == verticalWallCoordinates[i].coordinate.x))
+                            if (players[0].coordinate.y == board.getVerticalWalls()[i].y && (players[0].coordinate.x == board.getVerticalWalls()[i].x))
                             {
                                 return "incorrect move";
                             }
@@ -117,7 +117,7 @@ namespace quoridor_webAPI.Data.Models
                     if(coordinate.x - players[0].coordinate.x == - 1){
                         for(int i = 0; i > verticalWallCoordinates.Count; i++)
                         {
-                            if (players[0].coordinate.y == verticalWallCoordinates[i].y && ((players[0].coordinate.x - 1) == verticalWallCoordinates[i].coordinate.x))
+                            if (players[0].coordinate.y == verticalWallCoordinates[i].y && ((players[0].coordinate.x - 1) == verticalWallCoordinates[i].x))
                             {
                                 return "incorrect move";
                             }

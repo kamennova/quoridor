@@ -53,6 +53,12 @@ namespace quoridor_webAPI
 
             app.UseRouting();
 
+                     app.UseCors(
+                            options => options.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                        );
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

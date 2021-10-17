@@ -15,7 +15,7 @@ namespace quoridor_webAPI.Data.Services
             _player = new Player(1)
             {
                 Id = 1,
-                Coordinate = player.Coordinate,
+                coordinate = player.Coordinate,
                 amountOfWalls = player.amountOfWalls
             };
 
@@ -23,7 +23,7 @@ namespace quoridor_webAPI.Data.Services
 
         public void UpdatePlayer(PlayerVM player)
         {
-            _player.Coordinate = player.Coordinate;
+            _player.coordinate = player.Coordinate;
             _player.amountOfWalls = player.amountOfWalls;
         }
 
