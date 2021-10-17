@@ -23,6 +23,7 @@ namespace quoridor_webAPI.Data.Models
 
         private string validateWallMove(Coordinate coordinate, string wallType) {
             // walls cannot intersect
+            
             return null;
         }
 
@@ -59,16 +60,25 @@ namespace quoridor_webAPI.Data.Models
                             }
                         }
                     }
-                    return null
+                    return null;
                 }
                 else{
                     // jump over
                     if(Math.Abs(coordinate.y - players[0].coordinate.y) == 2) 
                     {
-                        if(players[0].coordinate.x == players[1].coordinate.x) // same line
+                        if((players[0].coordinate.x == players[1].coordinate.x) && Math.Abs(players[0].coordinate.y - players[1].coordinate.y) == 1) // same line
                         {
                             if (Math.Abs(coordinate.y - players[1].coordinate.y) == 1) // jump over end near the second player
                             {
+                                //wall chek
+                                for(int i = 0; i > horizontalWallCoordinates.Count; i++)
+                                {   //above wall
+                                    if(players[1].coordinate.x == horizontalWallCoordinates[i].x && players[1].coordinate.y == horizontalWallCoordinates[i].y)
+                                    {return "incorrect move";}
+                                    //below wall
+                                    if(players[1].coordinate.x == horizontalWallCoordinates[i].x && players[1].coordinate.y - 1 == horizontalWallCoordinates[i].y)
+                                    {return "incorrect move";}
+                                }
                                 return null;
                             }
                             else{return "incorrect move";}
@@ -103,7 +113,7 @@ namespace quoridor_webAPI.Data.Models
                             }
                         }
                     }
-                    return null
+                    return null;
                 }
                 else{
                     // jump over
@@ -113,6 +123,15 @@ namespace quoridor_webAPI.Data.Models
                         {
                             if (Math.Abs(coordinate.x - players[1].coordinate.x) == 1) // jump over end near the second player
                             {
+                                //wall check
+                                for(int i = 0; i > verticalWallCoordinates.Count; i++)
+                                {   //right wall
+                                    if(players[1].coordinate.y == verticalWallCoordinates[i].y && players[1].coordinate.x == verticalWallCoordinates[i].x)
+                                    {return "incorrect move";}
+                                    //left wall
+                                    if(players[1].coordinate.y == verticalWallCoordinates[i].y && players[1].coordinate.x - 1 == verticalWallCoordinates[i].x)
+                                    {return "incorrect move";}
+                                }
                                 return null;
                             }
                             else{return "incorrect move";}
