@@ -35,10 +35,10 @@ export const Game = ({mode}) => {
         setTurn(turn === 0 ? 1 : 0);
     };
 
-    const makeMove = (moveType, coordinate) => {
+    const makeMove = (moveType, coordinate, wallType) => {
         console.log(moveType, coordinate);
 
-        tryMove(moveType, coordinate).then((res) => {
+        tryMove(moveType, coordinate, wallType).then((res) => {
             if (res.body.isValid) {
                 setMadeMove(true);
             } else {
@@ -58,7 +58,7 @@ export const Game = ({mode}) => {
 
             {wrongMove && <span>Invalid wrong</span>}
             <GameBoard onGoToCell={(id) => makeMove(MoveTypes.GoToCell, id)}
-                       onPutWall={(coord) => makeMove(MoveTypes.PutWall, coord)}
+                       onPutWall={(coord, type) => makeMove(MoveTypes.PutWall, coord, type)}
                        horizontalWalls={horizontalWalls}
                        verticalWalls={verticalWalls}
                        players={playersCoords}/>
