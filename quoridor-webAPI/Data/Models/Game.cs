@@ -33,7 +33,32 @@ namespace quoridor_webAPI.Data.Models
 
         private string validateWallMove(Coordinate coordinate, string wallType) {
             // walls cannot intersect
-            
+            //horizontal
+            if (wallType == "horizontal")
+            {
+                for(int i = 0; horizontalWallCoordinates.Count; i++ )
+                {
+                    if (coordinate.x == horizontalWallCoordinates.x || coordinate.y == horizontalWallCoordinates.y)
+                    {
+                        return "incorrect move";
+                    }
+                }
+            }   
+            //vertical
+            if (wallType == "vertical")
+            {
+                for(int i = 0; verticalWallCoordinates.Count; i++ )
+                {
+                    if (coordinate.x == verticalWallCoordinates.x || coordinate.y == verticalWallCoordinates.y)
+                    {
+                        return "incorrect move";
+                    }
+                }
+            }
+            //passage  chek
+
+
+             
             return null;
         }
 
