@@ -9,7 +9,7 @@ namespace quoridor_webAPI.Data.Models
     {
         public int Id { get; set; }
 
-        public Coordinates coordinates = new Coordinates(5, 0);
+        public Coordinate Coordinate = new Coordinate(5, 0);
 
         public int amountOfWalls = 10;
 

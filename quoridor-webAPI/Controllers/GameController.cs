@@ -21,8 +21,17 @@ namespace quoridor_webAPI.Controllers
         {
             _gameService = gameService;
         }
+
         private bool isGameOn = false;
         private Game game;
+
+        [HttpPost("start")]
+        public IActionResult StartGame([FromBody] Move move)
+        {
+
+          return Ok();
+        }
+
 
         [HttpPost("try-move")]
         public IActionResult TryMove([FromBody] Move move)
@@ -32,18 +41,19 @@ namespace quoridor_webAPI.Controllers
           if (isGameOn == false) {
             error = "Game not started";
           } else {
-            error = game.validateMove(move);
+            error = game.makeMove(move);
           }
 
+          MoveValidationResult result;
+
            if (error != null) {
-                MoveValidationResult result = new MoveValidationResult(false, false);
+                result = new MoveValidationResult(false, false);
                 result.setMoveError(error);
                 return BadRequest(result);
            }
 
-           game.makeMove(move);
-           MoveValidationResult result = new MoveValidationResult(true, !game.getIsOn());
-           if (game.isOver()) {
+           result = new MoveValidationResult(true, !game.getIsOn());
+           if (!game.getIsOn()) {
                 result.setWinnerId(game.getWinnerId());
            }
 

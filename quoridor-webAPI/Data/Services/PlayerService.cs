@@ -15,7 +15,7 @@ namespace quoridor_webAPI.Data.Services
             _player = new Player()
             {
                 Id = 1,
-                coordinates = player.Coordinates,
+                Coordinate = player.Coordinate,
                 amountOfWalls = player.amountOfWalls
             };
 
@@ -23,15 +23,15 @@ namespace quoridor_webAPI.Data.Services
 
         public void UpdatePlayer(PlayerVM player)
         {
-            _player.coordinates = player.Coordinates;
+            _player.Coordinate = player.Coordinate;
             _player.amountOfWalls = player.amountOfWalls;
         }
 
-        public Coordinates GetValidPosition()
+        public Coordinate GetValidPosition()
         {
             //A* algorithm
 
-            return new Coordinates(0, 0);
+            return new Coordinate(0, 0);
         }
     }
 }

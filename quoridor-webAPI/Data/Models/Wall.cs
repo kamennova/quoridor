@@ -7,6 +7,6 @@ namespace quoridor_webAPI.Data.Models
 {
     public class Wall
     {
-        public List<Coordinates> coordinates = new List<Coordinates>(capacity:2);
+        public List<Coordinate> coordinate = new List<Coordinate>(capacity:2);
     }
 }

@@ -8,7 +8,7 @@ namespace quoridor_webAPI.Data.ViewModels
 {
     public class PlayerVM
     {
-        public Coordinates Coordinates;
+        public Coordinate Coordinate;
         public int amountOfWalls;
     }
 }

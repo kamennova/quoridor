@@ -8,7 +8,7 @@ namespace quoridor_webAPI.Data.ViewModels
 {
     public class MoveAttempt
     {
-        public Coordinates Coordinates;
+        public Coordinate coordinate;
         public int amountOfWalls;
     }
 }

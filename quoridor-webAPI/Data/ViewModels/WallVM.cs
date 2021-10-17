@@ -8,6 +8,6 @@ namespace quoridor_webAPI.Data.ViewModels
 {
     public class WallVM
     {
-        public Coordinates Coordinates;
-    }
+        public Coordinate Coordinate;
+           }
 }
