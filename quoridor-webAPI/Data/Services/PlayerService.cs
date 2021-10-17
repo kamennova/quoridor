@@ -12,7 +12,7 @@ namespace quoridor_webAPI.Data.Services
         private Player _player;
         public void AddPlayer(PlayerVM player)
         {
-            _player = new Player()
+            _player = new Player(1)
             {
                 Id = 1,
                 Coordinate = player.Coordinate,
