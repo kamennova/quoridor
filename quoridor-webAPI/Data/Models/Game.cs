@@ -8,10 +8,18 @@ namespace quoridor_webAPI.Data.Models
     public class Game
     {
 
-    private Player[] players;
+    public Game(List<Player> players) {
+        this.players = players;
+    }
 
-    private Coordinate[] horizontalWallCoordinates;
-    private Coordinate[] verticalWallCoordinates;
+    private List<Player> players;
+
+    private bool isOn = false;
+    private int currentTurn = 0;
+
+    private Board board = new Board();
+
+//    ---
 
        private string validateMove(Move move) {
        if (move.type == "PutWall" ) {
@@ -31,13 +39,52 @@ namespace quoridor_webAPI.Data.Models
             return null;
         }
 
+        private void doMakeMove(Move move) {
+
+        }
+
+        private Move lastMove;
+
+        private bool CheckIsGameOver(){
+                return false;
+                }
+
+//------------------------
+
        public string makeMove(Move move) {
+         if (!isOn) {
+         return "Game not started";
+         }
+
         string moveError = validateMove(move);
-         return moveError;
+
+        if (moveError != null) {
+            return moveError;
+        }
+
+        doMakeMove(move);
+        if (CheckIsGameOver()) {
+            isOn = false;
+            winnerId = currentTurn;
+        } else {
+            currentTurn = currentTurn == 0 ? 1 : 0;
+        }
+
+         return null;
+       }
+
+       public void startGame(){
+
        }
 
 
-       public bool isOn = false;
+        public Move getLastMove(){
+            return lastMove;
+        }
+
+        public int getTurn() {
+            return currentTurn;
+        }
 
        public bool getIsOn() {
             return isOn;
