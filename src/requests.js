@@ -28,8 +28,8 @@ export const startGame = async (mode) => {
     return {
         body: {
             coordinates: {
-                0: [ 2, 0 ],
-                1: [ 1, 0 ], // random
+                0: [ 4, 0 ],
+                1: [ 4, 8 ], // not random, but standart start position
             },
         }
     }

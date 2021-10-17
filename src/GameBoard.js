@@ -4,18 +4,45 @@ export const GameBoard = ({horizontalWalls, verticalWalls, players, onGoToCell})
 
     return (
         <div className="board">
-            {
-                [ ...Array(9) ].map(
-                    (elem, y) => <div class={"cell-row "}>{[ ...Array(9) ].map((elem2, x) => <Cell onClick={() => onGoToCell(y * 9 + x)}/>)}</div>)
-            }
-            <PlayerMark id={0} coord={players[0]} />
-            <PlayerMark id={1} coord={players[1]} />
+            <div className="board-cells">
+                    {
+                        [ ...Array(9) ].map(
+                            (elem, y) => <div class={"cell-row "}>{[ ...Array(9) ].map((elem2, x) => <Cell onClick={() => onGoToCell(y * 9 + x)}/>)}</div>)
+                    }
+                    <PlayerMark id={0} coord={players[0]} />
+                    <PlayerMark id={1} coord={players[1]} />
+            </div>
+            <div className="board-walls horizontal">
+                {
+                    [ ...Array(8) ].map(
+                        (elem, y) => <div class={"wall-row horizontal"}>{[ ...Array(8) ].map((elem2, x) => <WallHorizontal />)}</div>)
+                }
+            </div>
+            <div className="board-walls vertical">
+                {
+                    [ ...Array(8) ].map(
+                        (elem, y) => <div class={"wall-row vertical"}>{[ ...Array(8) ].map((elem2, x) => <WallVertical />)}</div>)
+                }
+            </div>
         </div>
+
     );
-};
+    };
 
 const Cell = ({isActive, onClick}) => (
     <div className={"cell " + (isActive ? "" : "free")} onClick={onClick}>
+
+    </div>
+);
+
+const WallHorizontal = ({isActive, onClick}) => (
+    <div className={"wall horizontal " + (isActive ? "" : "free")} onClick={onClick}>
+
+    </div>
+);
+
+const WallVertical = ({isActive, onClick}) => (
+    <div className={"wall vertical " + (isActive ? "" : "free")} onClick={onClick}>
 
     </div>
 );
