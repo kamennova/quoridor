@@ -4,7 +4,7 @@ import {startGame, tryMove} from "./requests";
 import {Modes, MoveTypes} from "./constants";
 
 export const Game = ({mode}) => {
-    const [wrongMove, setWrongMove] = useState(false);
+    const [ wrongMove, setWrongMove ] = useState(false);
     const [ madeMove, setMadeMove ] = useState(false);
     const [ turn, setTurn ] = useState(0);
     const [ playersCoords, setPlayersCoords ] = useState({0: [], 1: []});

@@ -1,31 +1,45 @@
-const makeReq = (method, content) => {
-    // todo request
-};
+const BASE_URL = "localhost:5000";
 
-export const tryMove = async (moveType, coordinate, playerId) => {
-    return {
+// [0, 2], {x: 0, y: 2}, 76
+/**
+ *  {
         body: {
             isValid: true,
-            isFinished: false,
+            isGameFinished: false,
         }
     };
-};
+ */
+export const tryMove = async (moveType, coordinate, playerId) => fetch(BASE_URL + "/tryMove", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: {
+        moveType,
+        coordinate,
+        playerId
+    }
+}).then(res => res.json());
 
-export const getOpponentMove = async () => {
-    return {
+/**
+ * {
         body: {
             coord: [],
             isFinished: false,
         }
     };
-};
+ */
+export const getOpponentMove = async () => fetch(BASE_URL + "/opponentMove", {
+    method: "GET",
+    headers: {"Content-Type": "application/json",}
+});
 
-export const finishGame = async () => {
 
-};
+export const finishGame = async () => fetch(BASE_URL + "/finish", {method: "POST"});
 
-export const startGame = async (mode) => {
-    return {
+
+/**
+ * {
         body: {
             coordinates: {
                 0: [ 4, 0 ],
@@ -33,4 +47,8 @@ export const startGame = async (mode) => {
             },
         }
     }
-};
+ */
+
+export const startGame = async (mode) => fetch(BASE_URL + "/start?mode=" + mode, {
+    method: "POST",
+});
