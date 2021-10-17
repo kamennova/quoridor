@@ -1,11 +1,14 @@
 import React, {useState} from "react";
 import {Modes} from "./constants";
 
-export const GameMenu = ({onStart}) => {
-    const [ mode, setMode ] = useState(Modes.TwoPlayers);
 
+
+export const GameMenu = ({onStart}) => {
+    
+    const [ mode, setMode ] = useState(Modes.TwoPlayers);
+    
     return (
-        <div className="modal">
+        <div className="modal" >
             <h3>New game</h3>
             <div className="content">
             <h4>Mode</h4>
@@ -26,6 +29,7 @@ export const GameMenu = ({onStart}) => {
                 <div className="btn">Cancel</div>
                 <div className="btn primary" onClick={() => onStart(mode)}>Start</div>
             </div>
+            
         </div>
     );
 };

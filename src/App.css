@@ -21,23 +21,38 @@
     font-size: calc(10px + 2vmin);
     color: white;
 }
-
-.board {
+.board{
     position: relative;
-    padding: 10px;
-    background: lightgray;
-    width: 600px;
+    width: 800px;
     margin: 0 auto;
+    
+    
+}
+.board-cells{
+    
+    position: absolute;
+    background: lightgray;
+    top: 0px;
+    
+}
+
+.board-walls.horizontal{
+    position: absolute;
+    top:60px
+}
+.board-walls.vertical{
+    position: absolute;
+    top:0px
 }
 
 .cell {
     width: 60px;
     height: 60px;
     border-radius: 4px;
-    background: brown;
-    border: 4px solid black;
-    margin-right: 2px;
-    margin-bottom: 2px;
+    background: rgb(75, 173, 230);
+    border: 2px solid black;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
 
 .cell.free {
@@ -48,13 +63,40 @@
     display: flex;
 }
 
-.cell-row:first-of-type .cell { /* finish */
-    background-color: red;
+.wall {
+    position: relative;
+    background: rgb(230, 75, 83);
+    border: 1px solid black;
 }
 
-.cell-row:last-of-type .cell { /* start */
-    background-color: lightgray;
+.wall.horizontal {
+   
+    width: 60px;
+    height: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
+
+.wall.vertical {
+    width: 20px;
+    height: 60px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.wall.free {
+    cursor: pointer;
+}
+
+.wall-row.horizontal {
+    display: flex;
+    margin-bottom: 40px;
+}
+.wall-row.vertical {
+    display: flex;
+}
+
+
 
 .modal {
     position: fixed;
@@ -95,9 +137,9 @@
     border-radius: 50%;
     background-color: yellow;
     position: absolute;
-    margin: 0 0 20px 20px;
+    margin: 0px 0px 20px 20px;
 }
 
 .player-mark.player-1 {
-    background: blue;
+    background: green;
 }
