@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;    
+    
+namespace quoridor_webAPI.Data.Models
+{
     public class PriorityQueue<TPriority, TItem> : IEnumerable<TItem>, IEnumerable<KeyValuePair<TPriority, TItem>>
     {
         private readonly SortedDictionary<TPriority, Queue<TItem>> _storage;
@@ -62,3 +67,4 @@
             throw new NotImplementedException();
         }
     }
+}
