@@ -14,7 +14,7 @@ namespace quoridor_webAPI.Data.Models
 
         public int Id { get; set; }
 
-        public Coordinate Coordinate = new Coordinate(5, 0);
+        public Coordinate coordinate = new Coordinate(5, 0);
 
         public int amountOfWalls = 10;
 
@@ -23,7 +23,7 @@ namespace quoridor_webAPI.Data.Models
         }
 
         public void updateCoordinate(Coordinate coordinate){
-            this.Coordinate = coordinate;
+            this.coordinate = coordinate;
         }
 
     }

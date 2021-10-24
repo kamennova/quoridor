@@ -17,18 +17,18 @@ namespace quoridor_webAPI.Data.Models
 
         private List<Coordinate> getPossibleSteps(Board board, List<Player> players){
             List<Coordinate> coords = new List<Coordinate>();
-            if (this.Coordinate.y < 8 &&
-                !board.getHorizontalWalls().Contains(new Coordinate(this.Coordinate.x, this.Coordinate.y)) &&
-                !board.getHorizontalWalls().Contains(new Coordinate(this.Coordinate.x-1, this.Coordinate.y))
+            if (this.coordinate.y < 8 &&
+                !board.getHorizontalWalls().Contains(new Coordinate(this.coordinate.x, this.coordinate.y)) &&
+                !board.getHorizontalWalls().Contains(new Coordinate(this.coordinate.x-1, this.coordinate.y))
                 ) { // check top
-                coords.Add(new Coordinate(this.Coordinate.x, this.Coordinate.y + 1));
+                coords.Add(new Coordinate(this.coordinate.x, this.coordinate.y + 1));
             }
 
-            if (this.Coordinate.y > 0 &&
-            !board.getHorizontalWalls().Contains(new Coordinate(this.Coordinate.x, this.Coordinate.y-1)) &&
-                            !board.getHorizontalWalls().Contains(new Coordinate(this.Coordinate.x-1, this.Coordinate.y-1))
+            if (this.coordinate.y > 0 &&
+            !board.getHorizontalWalls().Contains(new Coordinate(this.coordinate.x, this.coordinate.y-1)) &&
+                            !board.getHorizontalWalls().Contains(new Coordinate(this.coordinate.x-1, this.coordinate.y-1))
                             ){
-                coords.Add(new Coordinate(this.Coordinate.x, this.Coordinate.y-1));
+                coords.Add(new Coordinate(this.coordinate.x, this.coordinate.y-1));
                             }
 
             return coords;

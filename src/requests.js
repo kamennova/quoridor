@@ -1,6 +1,5 @@
-const BASE_URL = "localhost:5000";
+const BASE_URL = "https://localhost:5001/api/Game";
 
-// [0, 2], {x: 0, y: 2}, 76
 /**
  *  {
         body: {
@@ -9,7 +8,7 @@ const BASE_URL = "localhost:5000";
         }
     };
  */
-export const tryMove = async (moveType, coordinate, playerId) => fetch(BASE_URL + "/tryMove", {
+export const tryMove = async (moveType, coordinate, playerId) => fetch(BASE_URL + "/try-move", {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
@@ -49,6 +48,12 @@ export const finishGame = async () => fetch(BASE_URL + "/finish", {method: "POST
     }
  */
 
-export const startGame = async (mode) => fetch(BASE_URL + "/start?mode=" + mode, {
+export const startGame = async (mode) => fetch(BASE_URL + "/start", {
     method: "POST",
-});
+    body: {
+        mode,
+    },
+    headers:{
+        "Content-Type": "application/json"
+    }
+}).then(res => res.json());

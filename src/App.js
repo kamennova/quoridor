@@ -15,6 +15,7 @@ const App = () => {
         console.log(mode);
         setMode(mode);
         setIsGameOn(true);
+        setShowNewGameMenu(false);
     };
 
     return (
