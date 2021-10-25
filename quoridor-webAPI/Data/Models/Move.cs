@@ -8,12 +8,13 @@ namespace quoridor_webAPI.Data.Models
     public class Move
     {
        public bool isOn = false;
-       public Coordinate coordinate = new Coordinate(5, 0);
+       public Coordinate coordinate;
        public string type;
        public string wallType;
 
        public Move(string moveType, string wallType, Coordinate coordinate){
             this.type = moveType;
+            this.coordinate = coordinate;
             this.wallType = wallType; // can be null, bad i know
        }
     }

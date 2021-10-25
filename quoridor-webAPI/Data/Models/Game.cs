@@ -53,8 +53,8 @@ namespace quoridor_webAPI.Data.Models {
             return null;
         }
 
-        private Player getOpponent() { // todo
-            return players[1];
+        private Player getOpponent() {
+            return players[currentTurn == 0 ? 1 : 0];
         }
 
         private string checkPlayerCollision(Coordinate c) {
@@ -92,12 +92,12 @@ namespace quoridor_webAPI.Data.Models {
                 return "Move over board";
             }
 
-            if (Math.abs(c.x - currentC.x) > 2 || Math.abs(c.y - currentC.y) > 2) {
+            if (Math.Abs(c.x - currentC.x) > 2 || Math.Abs(c.y - currentC.y) > 2) {
                 return "Move is too long";
             }
 
             if (checkPlayerCollision(c) != null) {
-                return checkPlayerCollision(c); // todo
+                return checkPlayerCollision(c); // todo reformat
             }
 
             if (c.x != currentC.x && c.y != currentC.y) {
@@ -109,10 +109,10 @@ namespace quoridor_webAPI.Data.Models {
 
                 if (Math.Abs(c.y - currentC.y) == 1) { // step
                     if (currentC.y - c.y == 1) { // step up
-                        if (!checkWallsToTheTop(currentC)) {
+                        if (checkWallsToTheTop(currentC)) {
                             return "Cannot move across wall";
                         }
-                    } else if (!checkWallsToTheBottom(currentC)) {
+                    } else if (checkWallsToTheBottom(currentC)) {
                         return "Cannot move across wall";
                     }
                 } else if (Math.Abs(c.y - currentC.y) == 2) {
@@ -121,10 +121,10 @@ namespace quoridor_webAPI.Data.Models {
                     }
 
                     if (currentC.y - opponentC.y > 0) { // jump to bottom
-                        if (!checkWallsToTheBottom(opponentC)) {
+                        if (checkWallsToTheBottom(opponentC)) {
                             return WALL_ERR;
                         }
-                    } else if (!checkWallsToTheTop(opponentC)) {
+                    } else if (checkWallsToTheTop(opponentC)) {
                         return WALL_ERR;
                     }
                 }
@@ -133,10 +133,10 @@ namespace quoridor_webAPI.Data.Models {
 
                 if (Math.Abs(c.x - currentC.x) == 1) { // step
                     if (currentC.x - c.x > 0) { // step left
-                        if (!checkWallsToTheLeft(currentC)) {
+                        if (checkWallsToTheLeft(currentC)) {
                             return "Cannot move across wall";
                         }
-                    } else if (!checkWallsToTheRight(currentC)) {
+                    } else if (checkWallsToTheRight(currentC)) {
                         return "Cannot move across wall";
                     }
                 } else if (Math.Abs(c.x - currentC.x) == 2) { // jump over
@@ -146,10 +146,10 @@ namespace quoridor_webAPI.Data.Models {
                     }
 
                     if (currentC.x - opponentC.x > 0) { // jump to left
-                        if (!checkWallsToTheLeft(opponentC)) {
+                        if (checkWallsToTheLeft(opponentC)) {
                             return WALL_ERR;
                         }
-                    } else if (!checkWallsToTheRight(opponentC)) {
+                    } else if (checkWallsToTheRight(opponentC)) {
                         return WALL_ERR;
                     }
 
@@ -172,9 +172,8 @@ namespace quoridor_webAPI.Data.Models {
         //------------------------
 
         public string makeMove(Move move) {
-            Console.WriteLine(currentTurn);
-            Console.WriteLine(players[currentTurn].Id);
-            log(players[currentTurn].coordinate.y + " " + players[currentTurn].coordinate.x);
+            Console.WriteLine("turn " + currentTurn);
+            log(players[currentTurn].coordinate.x + " " + players[currentTurn].coordinate.y + " , moved to " + move.coordinate.x + " " + move.coordinate.y);
             if (!isOn) {
                 return "Game not started";
             }
@@ -187,7 +186,6 @@ namespace quoridor_webAPI.Data.Models {
 
             doMakeMove(move);
             if (CheckIsGameOver()) {
-
                 isOn = false;
                 winnerId = currentTurn;
                 log("here");
