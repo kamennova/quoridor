@@ -5,9 +5,9 @@ namespace quoridor_webAPI.Data.Models
     public class Node
         {
             public bool isAllyTurn { get; } // true == your turn; false ==enemy turn
-            Move currentPosition { get; }
+            public Move currentPosition { get; }
             //Node parantNode { get; set; }
-            List<Node> childNodes { get; set; }
+            public List<Node> childNodes { get; set; }
 
             public Node (Move currentPosition, bool isAllyTurn)
             {

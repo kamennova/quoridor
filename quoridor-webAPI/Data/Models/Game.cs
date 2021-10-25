@@ -1,181 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace quoridor_webAPI.Data.Models
-{
-    public class Game
-    {
+namespace quoridor_webAPI.Data.Models {
+    public class Game {
+        private string WALL_ERR = "Cannot move across wall";
 
-    public Game(List<Player> players) {
-        this.players = players;
-    }
+        public Game(List < Player > players) {
+            this.players = players;
+            this.players[0].coordinate = new Coordinate(4, 0);
+            this.players[1].coordinate = new Coordinate(4, 8);
+        }
 
-    private List<Player> players;
+        private List < Player > players;
 
-    private bool isOn = false;
-    private int currentTurn = 0;
+        private bool isOn = false;
+        private int currentTurn = 0;
 
-    private Board board = new Board();
+        private Board board = new Board();
 
-//    ---
-    private List<Coordinate> horizontalWallCoordinates;
-    private List<Coordinate> verticalWallCoordinates;
+        //    ---
+        private List < Coordinate > horizontalWallCoordinates;
+        private List < Coordinate > verticalWallCoordinates;
 
-       private string validateMove(Move move) {
-       if (move.type == "PutWall" ) {
-            return validateWallMove(move.coordinate, move.wallType);
-       } else {
-            return validateStepMove(move.coordinate);
-       }
-       }
+        private string validateMove(Move move) {
+            if (move.type == "PutWall") {
+                return validateWallMove(move.coordinate, move.wallType);
+            } else {
+                return validateStepMove(move.coordinate);
+            }
+        }
 
         private string validateWallMove(Coordinate coordinate, string wallType) {
             // walls cannot intersect
             //horizontal
-            if (wallType == "horizontal")
-            {
-                for(int i = 0; horizontalWallCoordinates.Count; i++ )
-                {
-                    if (coordinate.x == horizontalWallCoordinates.x || coordinate.y == horizontalWallCoordinates.y)
-                    {
+            if (wallType == "horizontal") {
+                for (int i = 0; horizontalWallCoordinates.Count > 0; i++) {
+                    if (coordinate.x == horizontalWallCoordinates[i].x || coordinate.y == horizontalWallCoordinates[i].y) {
                         return "incorrect move";
                     }
                 }
-            }   
+            }
             //vertical
-            if (wallType == "vertical")
-            {
-                for(int i = 0; verticalWallCoordinates.Count; i++ )
-                {
-                    if (coordinate.x == verticalWallCoordinates.x || coordinate.y == verticalWallCoordinates.y)
-                    {
+            if (wallType == "vertical") {
+                for (int i = 0; verticalWallCoordinates.Count > 0; i++) {
+                    if (coordinate.x == verticalWallCoordinates[i].x || coordinate.y == verticalWallCoordinates[i].y) {
                         return "incorrect move";
                     }
                 }
             }
             //passage  chek
 
-
-             
             return null;
         }
 
-        private string validateStepMove(Coordinate coordinate) {
-            
-            //player check
-            if(coordinate.x == players[1].coordinate.x && coordinate.y == players[1].coordinate.y)
-            {
-                return "incorrect move";
+        private Player getOpponent() { // todo
+            return players[1];
+        }
+
+        private string checkPlayerCollision(Coordinate c) {
+            if (c.x == getOpponent().coordinate.x && c.y == getOpponent().coordinate.y) {
+                return "Players collide";
+            } else if (c.x == players[currentTurn].coordinate.x && c.y == players[currentTurn].coordinate.y) {
+                return "Player stands still";
             }
-            //by y
-            if (coordinate.x == players[0].coordinate.x)
-            {
-                if(Math.Abs(coordinate.y - players[0].coordinate.y) == 1)
-                {
-                    //wall check
-                    //above player
-                    if(coordinate.y - players[0].coordinate.y == 1){
-                        for(int i = 0; i > horizontalWallCoordinates.Count; i++)
-                        {
-                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && (players[0].coordinate.y == horizontalWallCoordinates[i].y))
-                            {
-                                return "incorrect move";
-                            }
-                        }
-                    }
-                    //below player
-                    if(coordinate.y - players[0].coordinate.y == - 1){
-                        for(int i = 0; i > horizontalWallCoordinates.Count; i++)
-                        {
-                            if (players[0].coordinate.x == horizontalWallCoordinates[i].x && ((players[0].coordinate.y - 1) == horizontalWallCoordinates[i].y))
-                            {
-                                return "incorrect move";
-                            }
-                        }
-                    }
-                    return null;
-                }
-                else{
-                    // jump over
-                    if(Math.Abs(coordinate.y - players[0].coordinate.y) == 2) 
-                    {
-                        if((players[0].coordinate.x == players[1].coordinate.x) && Math.Abs(players[0].coordinate.y - players[1].coordinate.y) == 1) // same line
-                        {
-                            if (Math.Abs(coordinate.y - players[1].coordinate.y) == 1) // jump over end near the second player
-                            {
-                                //wall chek
-                                for(int i = 0; i > horizontalWallCoordinates.Count; i++)
-                                {   //above wall
-                                    if(players[1].coordinate.x == horizontalWallCoordinates[i].x && players[1].coordinate.y == horizontalWallCoordinates[i].y)
-                                    {return "incorrect move";}
-                                    //below wall
-                                    if(players[1].coordinate.x == horizontalWallCoordinates[i].x && players[1].coordinate.y - 1 == horizontalWallCoordinates[i].y)
-                                    {return "incorrect move";}
-                                }
-                                return null;
-                            }
-                            else{return "incorrect move";}
-                        }
-                    }
-                    else{return "incorrect move";}
-                }
+
+            return null;
+        }
+
+        private bool checkWallsToTheLeft(Coordinate currentC) {
+            return board.getVerticalWalls().Exists(w => (currentC.y == w.y || currentC.y == w.y - 1) && currentC.x == w.x);
+        }
+
+        private bool checkWallsToTheRight(Coordinate currentC) {
+            return board.getVerticalWalls().Exists(w => (currentC.y == w.y || currentC.y == w.y - 1) && currentC.x == w.x - 1);
+        }
+
+        private bool checkWallsToTheTop(Coordinate currentC) {
+            return board.getHorizontalWalls().Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y);
+        }
+
+        private bool checkWallsToTheBottom(Coordinate currentC) {
+            return board.getHorizontalWalls().Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y - 1);
+        }
+
+
+        private string validateStepMove(Coordinate c) {
+            Coordinate opponentC = getOpponent().coordinate;
+            Coordinate currentC = players[currentTurn].coordinate;
+
+            if (c.x < 0 || c.x > 8 || c.y < 0 || c.y > 8) {
+                return "Move over board";
             }
-            //by x
-            if (coordinate.y == players[0].coordinate.y)
-            {
-                if(Math.Abs(coordinate.x - players[0].coordinate.x) == 1)
-                {
-                    //wall check
-                    //from right of a player
-                    if(coordinate.x - players[0].coordinate.x == 1){
-                        for(int i = 0; i > verticalWallCoordinates.Count; i++)
-                        {
-                            if (players[0].coordinate.y == board.getVerticalWalls()[i].y && (players[0].coordinate.x == board.getVerticalWalls()[i].x))
-                            {
-                                return "incorrect move";
-                            }
+
+            if (Math.abs(c.x - currentC.x) > 2 || Math.abs(c.y - currentC.y) > 2) {
+                return "Move is too long";
+            }
+
+            if (checkPlayerCollision(c) != null) {
+                return checkPlayerCollision(c); // todo
+            }
+
+            if (c.x != currentC.x && c.y != currentC.y) {
+                return "Diagonal moves not allowed";
+            }
+
+            if (c.x == currentC.x) {
+                Console.WriteLine("vertical move");
+
+                if (Math.Abs(c.y - currentC.y) == 1) { // step
+                    if (currentC.y - c.y == 1) { // step up
+                        if (!checkWallsToTheTop(currentC)) {
+                            return "Cannot move across wall";
                         }
+                    } else if (!checkWallsToTheBottom(currentC)) {
+                        return "Cannot move across wall";
                     }
-                    //from left of a player
-                    if(coordinate.x - players[0].coordinate.x == - 1){
-                        for(int i = 0; i > verticalWallCoordinates.Count; i++)
-                        {
-                            if (players[0].coordinate.y == verticalWallCoordinates[i].y && ((players[0].coordinate.x - 1) == verticalWallCoordinates[i].x))
-                            {
-                                return "incorrect move";
-                            }
+                } else if (Math.Abs(c.y - currentC.y) == 2) {
+                    if (currentC.x != opponentC.x || Math.Abs(currentC.y - opponentC.y) != 1) {
+                        return "Cannot jump because opponent is not near";
+                    }
+
+                    if (currentC.y - opponentC.y > 0) { // jump to bottom
+                        if (!checkWallsToTheBottom(opponentC)) {
+                            return WALL_ERR;
                         }
+                    } else if (!checkWallsToTheTop(opponentC)) {
+                        return WALL_ERR;
                     }
-                    return null;
                 }
-                else{
-                    // jump over
-                    if(Math.Abs(coordinate.x - players[0].coordinate.x) == 2)
-                    {
-                        if(players[0].coordinate.y == players[1].coordinate.y) // same line
-                        {
-                            if (Math.Abs(coordinate.x - players[1].coordinate.x) == 1) // jump over end near the second player
-                            {
-                                //wall check
-                                for(int i = 0; i > verticalWallCoordinates.Count; i++)
-                                {   //right wall
-                                    if(players[1].coordinate.y == verticalWallCoordinates[i].y && players[1].coordinate.x == verticalWallCoordinates[i].x)
-                                    {return "incorrect move";}
-                                    //left wall
-                                    if(players[1].coordinate.y == verticalWallCoordinates[i].y && players[1].coordinate.x - 1 == verticalWallCoordinates[i].x)
-                                    {return "incorrect move";}
-                                }
-                                return null;
-                            }
-                            else{return "incorrect move";}
+            } else if (c.y == currentC.y) {
+                Console.WriteLine("horizontal move");
+
+                if (Math.Abs(c.x - currentC.x) == 1) { // step
+                    if (currentC.x - c.x > 0) { // step left
+                        if (!checkWallsToTheLeft(currentC)) {
+                            return "Cannot move across wall";
                         }
+                    } else if (!checkWallsToTheRight(currentC)) {
+                        return "Cannot move across wall";
                     }
-                    else{return "incorrect move";}
+                } else if (Math.Abs(c.x - currentC.x) == 2) { // jump over
+
+                    if (currentC.y != opponentC.y || Math.Abs(currentC.x - opponentC.x) != 1) {
+                        return "Cannot jump because opponent is not near";
+                    }
+
+                    if (currentC.x - opponentC.x > 0) { // jump to left
+                        if (!checkWallsToTheLeft(opponentC)) {
+                            return WALL_ERR;
+                        }
+                    } else if (!checkWallsToTheRight(opponentC)) {
+                        return WALL_ERR;
+                    }
+
                 }
             }
-            return "incorrect move";
+
+            return null;
         }
 
         private void doMakeMove(Move move) {
@@ -184,40 +165,47 @@ namespace quoridor_webAPI.Data.Models
 
         private Move lastMove;
 
-        private bool CheckIsGameOver(){
-                return false;
-                }
-
-//------------------------
-
-       public string makeMove(Move move) {
-         if (!isOn) {
-         return "Game not started";
-         }
-
-        string moveError = validateMove(move);
-
-        if (moveError != null) {
-            return moveError;
+        private bool CheckIsGameOver() {
+            return false;
         }
 
-        doMakeMove(move);
-        if (CheckIsGameOver()) {
-            isOn = false;
-            winnerId = currentTurn;
-        } else {
-            currentTurn = currentTurn == 0 ? 1 : 0;
+        //------------------------
+
+        public string makeMove(Move move) {
+            Console.WriteLine(currentTurn);
+            Console.WriteLine(players[currentTurn].Id);
+            log(players[currentTurn].coordinate.y + " " + players[currentTurn].coordinate.x);
+            if (!isOn) {
+                return "Game not started";
+            }
+
+            string moveError = validateMove(move);
+
+            if (moveError != null) {
+                return moveError;
+            }
+
+            doMakeMove(move);
+            if (CheckIsGameOver()) {
+
+                isOn = false;
+                winnerId = currentTurn;
+                log("here");
+            } else {
+                currentTurn = currentTurn == 0 ? 1 : 0;
+            }
+
+            return null;
+        }
+        private void log(String s) {
+            Console.WriteLine(s);
+        }
+        public void start() {
+            winnerId = null;
+            isOn = true;
         }
 
-         return null;
-       }
-
-       public void startGame(){
-
-       }
-
-
-        public Move getLastMove(){
+        public Move getLastMove() {
             return lastMove;
         }
 
@@ -225,14 +213,13 @@ namespace quoridor_webAPI.Data.Models
             return currentTurn;
         }
 
-       public bool getIsOn() {
+        public bool getIsOn() {
             return isOn;
-       }
+        }
 
-       private int winnerId { get; set; }
-
-       public int getWinnerId(){
-        return winnerId;
-       }
+        public int ? winnerId {
+            get;
+            set;
+        }
     }
 }
