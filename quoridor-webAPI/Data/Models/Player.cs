@@ -7,7 +7,6 @@ namespace quoridor_webAPI.Data.Models
 {
     public class Player
     {
-
         public Player(int id) {
             this.Id = id;
         }
@@ -25,6 +24,5 @@ namespace quoridor_webAPI.Data.Models
         public void updateCoordinate(Coordinate coordinate){
             this.coordinate = coordinate;
         }
-
     }
 }

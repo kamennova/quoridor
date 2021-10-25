@@ -11,16 +11,12 @@ namespace quoridor_webAPI.Data.Models {
             this.players[1].coordinate = new Coordinate(4, 8);
         }
 
-        private List < Player > players;
+        public List < Player > players;
 
         private bool isOn = false;
         private int currentTurn = 0;
 
-        private Board board = new Board();
-
-        //    ---
-        private List < Coordinate > horizontalWallCoordinates;
-        private List < Coordinate > verticalWallCoordinates;
+        public Board board = new Board();
 
         private string validateMove(Move move) {
             if (move.type == "PutWall") {
@@ -30,27 +26,31 @@ namespace quoridor_webAPI.Data.Models {
             }
         }
 
-        private string validateWallMove(Coordinate coordinate, string wallType) {
-            // walls cannot intersect
-            //horizontal
+        private string validateWallMove(Coordinate c, string wallType) {
+            if (c.x < 0 || c.x > 7 || c.y < 0 || c.y > 7) {
+                return "Over board";
+            }
+
+            // intersection
             if (wallType == "horizontal") {
-                for (int i = 0; horizontalWallCoordinates.Count > 0; i++) {
-                    if (coordinate.x == horizontalWallCoordinates[i].x || coordinate.y == horizontalWallCoordinates[i].y) {
-                        return "incorrect move";
-                    }
+                if (board.getHorizontalWalls().Exists(w => w.y == c.y && (w.x == c.x || w.x -1 == c.x )) || // todo contains
+                board.getVerticalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
+                    return "Walls intersect";
                 }
+            } else if (board.getHorizontalWalls().Exists(w => w.y == c.y && (w.x == c.x || w.x -1 == c.x )) || //todo for vertical
+                                   board.getVerticalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
+                                       return "Walls intersect";
+                                   }
+
+            if(doesWallBlockPassing()) {
+                return "Wall blocks passing";
             }
-            //vertical
-            if (wallType == "vertical") {
-                for (int i = 0; verticalWallCoordinates.Count > 0; i++) {
-                    if (coordinate.x == verticalWallCoordinates[i].x || coordinate.y == verticalWallCoordinates[i].y) {
-                        return "incorrect move";
-                    }
-                }
-            }
-            //passage  chek
 
             return null;
+        }
+
+        private bool doesWallBlockPassing(){
+            return false;
         }
 
         private Player getOpponent() {
@@ -66,23 +66,6 @@ namespace quoridor_webAPI.Data.Models {
 
             return null;
         }
-
-        private bool checkWallsToTheLeft(Coordinate currentC) {
-            return board.getVerticalWalls().Exists(w => (currentC.y == w.y || currentC.y == w.y - 1) && currentC.x == w.x);
-        }
-
-        private bool checkWallsToTheRight(Coordinate currentC) {
-            return board.getVerticalWalls().Exists(w => (currentC.y == w.y || currentC.y == w.y - 1) && currentC.x == w.x - 1);
-        }
-
-        private bool checkWallsToTheTop(Coordinate currentC) {
-            return board.getHorizontalWalls().Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y);
-        }
-
-        private bool checkWallsToTheBottom(Coordinate currentC) {
-            return board.getHorizontalWalls().Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y - 1);
-        }
-
 
         private string validateStepMove(Coordinate c) {
             Coordinate opponentC = getOpponent().coordinate;
@@ -109,50 +92,48 @@ namespace quoridor_webAPI.Data.Models {
 
                 if (Math.Abs(c.y - currentC.y) == 1) { // step
                     if (currentC.y - c.y == 1) { // step up
-                        if (checkWallsToTheTop(currentC)) {
+                        if (MoveValidator.checkWallsToTheTop(currentC, board.getHorizontalWalls())) {
                             return "Cannot move across wall";
                         }
-                    } else if (checkWallsToTheBottom(currentC)) {
+                    } else if (MoveValidator.checkWallsToTheBottom(currentC, board.getHorizontalWalls())) {
                         return "Cannot move across wall";
                     }
-                } else if (Math.Abs(c.y - currentC.y) == 2) {
+                } else {
                     if (currentC.x != opponentC.x || Math.Abs(currentC.y - opponentC.y) != 1) {
                         return "Cannot jump because opponent is not near";
                     }
 
                     if (currentC.y - opponentC.y > 0) { // jump to bottom
-                        if (checkWallsToTheBottom(opponentC)) {
+                        if (MoveValidator.checkWallsToTheBottom(opponentC,  board.getHorizontalWalls())) {
                             return WALL_ERR;
                         }
-                    } else if (checkWallsToTheTop(opponentC)) {
+                    } else if (MoveValidator.checkWallsToTheTop(opponentC, board.getHorizontalWalls())) {
                         return WALL_ERR;
                     }
                 }
-            } else if (c.y == currentC.y) {
+            } else {
                 Console.WriteLine("horizontal move");
 
                 if (Math.Abs(c.x - currentC.x) == 1) { // step
                     if (currentC.x - c.x > 0) { // step left
-                        if (checkWallsToTheLeft(currentC)) {
+                        if (MoveValidator.checkWallsToTheLeft(currentC, board.getVerticalWalls())) {
                             return "Cannot move across wall";
                         }
-                    } else if (checkWallsToTheRight(currentC)) {
+                    } else if (MoveValidator.checkWallsToTheRight(currentC, board.getVerticalWalls())) {
                         return "Cannot move across wall";
                     }
-                } else if (Math.Abs(c.x - currentC.x) == 2) { // jump over
-
+                } else { // jump over
                     if (currentC.y != opponentC.y || Math.Abs(currentC.x - opponentC.x) != 1) {
                         return "Cannot jump because opponent is not near";
                     }
 
                     if (currentC.x - opponentC.x > 0) { // jump to left
-                        if (checkWallsToTheLeft(opponentC)) {
+                        if (MoveValidator.checkWallsToTheLeft(opponentC, board.getVerticalWalls())) {
                             return WALL_ERR;
                         }
-                    } else if (checkWallsToTheRight(opponentC)) {
+                    } else if (MoveValidator.checkWallsToTheRight(opponentC, board.getVerticalWalls())) {
                         return WALL_ERR;
                     }
-
                 }
             }
 
@@ -160,16 +141,21 @@ namespace quoridor_webAPI.Data.Models {
         }
 
         private void doMakeMove(Move move) {
-
+            if (move.type == "PutWall") {
+                this.players[currentTurn].amountOfWalls--;
+                if (move.wallType == "horizontal") {
+                    this.board.getHorizontalWalls().Add(move.coordinate);
+                } else {
+                    this.board.getVerticalWalls().Add(move.coordinate);
+                }
+            } else {
+                this.players[currentTurn].coordinate = move.coordinate;
+            }
         }
-
-        private Move lastMove;
 
         private bool CheckIsGameOver() {
             return false;
         }
-
-        //------------------------
 
         public string makeMove(Move move) {
             Console.WriteLine("turn " + currentTurn);
@@ -195,16 +181,14 @@ namespace quoridor_webAPI.Data.Models {
 
             return null;
         }
+
         private void log(String s) {
             Console.WriteLine(s);
         }
+
         public void start() {
             winnerId = null;
             isOn = true;
-        }
-
-        public Move getLastMove() {
-            return lastMove;
         }
 
         public int getTurn() {

@@ -5,6 +5,8 @@ namespace quoridor_webAPI.Data.Models {
 
   public class GameCLI {
     private Game game;
+    BotPlayer bot = new BotPlayer(0);
+    UserPlayer player = new UserPlayer(1);
 
     private Coordinate getCoordinate(string input) {
       char col = input[0];
@@ -28,8 +30,7 @@ namespace quoridor_webAPI.Data.Models {
       Coordinate c = getCoordinate(input[1]);
       log(c.x + " " + c.y);
 
-      if (input[0] == "move") {
-        log("here");
+      if (input[0] == "move" || input[0] == "jump") {
         return new Move("Step", null, c);
       } else if (input[0] == "wall") {
         string wallType = input[1][2] == 'h' ? "horizontal" : "vertical";
@@ -37,20 +38,16 @@ namespace quoridor_webAPI.Data.Models {
       }
 
       return null;
-
     }
 
     public void executeCommand(string[] input) {
       string command = input[0];
 
       if (command == "black" || command == "white") {
-        Player player1 = new BotPlayer(0);
-        Player player2 = new UserPlayer(1);
-
         if (command == "black") {
           Player[] playersArr = {
-            player1,
-            player2
+            bot,
+            player
           };
 
           List < Player > players = new List < Player > (playersArr);
@@ -58,8 +55,8 @@ namespace quoridor_webAPI.Data.Models {
           this.game = new Game(players);
         } else {
           Player[] playersArr = {
-            player2,
-            player1
+            player,
+            bot
           };
 
           List < Player > players = new List < Player > (playersArr);
@@ -71,22 +68,34 @@ namespace quoridor_webAPI.Data.Models {
         Move move = getMove(input);
         string error = game.makeMove(move);
         log(error);
-        if (!game.getIsOn() && game.winnerId != null) {
-          Console.WriteLine(game.winnerId);
-          log("Game over, winner: " + game.winnerId);
-        }
       }
     }
 
     public void run() {
       Console.WriteLine("To start game enter start");
 
-      string input = Console.ReadLine();
+      string input;
 
-      while (input != "exit") {
-        executeCommand(input.Split(" "));
+      do {
         input = Console.ReadLine();
-      }
+        executeCommand(input.Split(" "));
+
+        if (!game.getIsOn() && game.winnerId != null) {
+          Console.WriteLine(game.winnerId);
+          log("Game over, winner: " + game.winnerId);
+        }
+
+        if (game.players[game.getTurn()].Id == 0) { // todo
+
+          game.makeMove(bot.getMove(game.board, game.players));
+
+          if (!game.getIsOn() && game.winnerId != null) {
+            Console.WriteLine(game.winnerId);
+            log("Game over, winner: " + game.winnerId);
+          }
+        }
+
+      } while (input != "exit");
 
       Console.WriteLine("Bye!");
     }
