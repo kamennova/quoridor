@@ -16,9 +16,7 @@ namespace quoridor_webAPI.Data.Models
         }
 
         private Move generateRandomMove(Board board, List<Player> players){
-//            List<Coordinate> possible = getPossibleSteps(board, players);
-
-            return new Move("Step", null, new Coordinate(0, 0));
+            return BaseMinimax.getPossibleMoves(this, board, players)[0];
         }
     }
 }

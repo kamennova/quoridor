@@ -13,7 +13,7 @@ namespace quoridor_webAPI.Data.Models {
       int row = Int32.Parse(input[1].ToString());
 
       if ((int) col >= (int)
-        'S') { // wall move
+        'S') { // wall move todo check vertical for 8
         return new Coordinate((int) col - (int)
           'S', 8 - row);
       } else {
@@ -46,8 +46,8 @@ namespace quoridor_webAPI.Data.Models {
       if (command == "black" || command == "white") {
         if (command == "black") {
           Player[] playersArr = {
-            bot,
-            player
+            player,
+            bot
           };
 
           List < Player > players = new List < Player > (playersArr);
@@ -55,8 +55,8 @@ namespace quoridor_webAPI.Data.Models {
           this.game = new Game(players);
         } else {
           Player[] playersArr = {
-            player,
-            bot
+          bot,
+            player
           };
 
           List < Player > players = new List < Player > (playersArr);
@@ -72,7 +72,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     public void run() {
-      Console.WriteLine("To start game enter start");
+      Console.WriteLine("To start game enter black or white");
 
       string input;
 

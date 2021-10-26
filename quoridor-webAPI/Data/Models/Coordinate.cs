@@ -15,5 +15,12 @@ namespace quoridor_webAPI.Data.Models
             this.x = x;
             this.y = y;
         }
+
+         public override bool Equals(object obj)
+                {
+                    if (obj == null) return false;
+                    Coordinate c = obj as Coordinate;
+                    return c.x == this.x && c.y == this.y;
+                }
     }
 }
