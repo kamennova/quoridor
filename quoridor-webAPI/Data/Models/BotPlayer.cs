@@ -16,7 +16,7 @@ namespace quoridor_webAPI.Data.Models
         }
 
         private Move generateRandomMove(Board board, List<Player> players){
-            return BaseMinimax.getPossibleMoves(this, board, players)[0];
+            return BaseMinimax.ChooseMove(board, this, players);
         }
     }
 }

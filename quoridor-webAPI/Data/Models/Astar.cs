@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace quoridor_webAPI.Data.Models
 {
-    class Astar
+    class AStar
     {
         List<Coordinate> closed;
         PriorityQueue<int, Coordinate> opened;
 
-        double Distance(Coordinate start, Coordinate end)
+        // heuristic?
+        double Distance(Coordinate start, int goal)
         {
-            return Math.Sqrt((end.x - start.x)^2 +(end.y - start.y)^2);
+            return Math.Abs(start.y - goal);
         }
 
-        void search(Coordinate start, Coordinate goal)
-        {
-
+        // goal is y axis value, return distance to goal or -1
+        public static int search(Board board, Coordinate start, int goal) {
+            return 0;
         }
-        
     }
 }
 
