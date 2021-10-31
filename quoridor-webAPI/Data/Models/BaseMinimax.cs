@@ -14,14 +14,14 @@ namespace quoridor_webAPI.Data.Models {
       set;
     }
 
-    public static Dictionary < Move, int > getPossibleMoves(Player player, Board board, List < Player > players) {
-      Dictionary < Move, int > steps = getPossibleStepMoves(player, board, players);
+    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board board, List < Player > players) {
+      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, board, players);
 
       foreach(var s in steps) {
         log(s.Key.coordinate.x + " " + s.Key.coordinate.y);
       }
 
-      Dictionary < Move, int > walls = getPossibleWallMoves(player, board, players);
+      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, board, players);
       log("walls " + walls.Count);
 
       return steps;
@@ -38,24 +38,24 @@ namespace quoridor_webAPI.Data.Models {
       return walls;
     }
 
-    private static Dictionary < Move, int > getPossibleStepMoves(Player player, Board board, List < Player > players) {
+    private static PriorityQueue < Move, int > getPossibleStepMoves(Player player, Board board, List < Player > players) {
 
       Coordinate c = player.coordinate;
-      Dictionary < Move, int > moves = new Dictionary < Move, int > ();
+      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
 
       if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, board.getHorizontalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x, c.y - 1)), 0);
+        moves.Enqueue(new Move("Move", null, new Coordinate(c.x, c.y - 1)), 0);
       }
 
       if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, board.getHorizontalWalls())) { // check top
-        moves.Add(new Move("Move", null, new Coordinate(c.x, c.y + 1)), 0);
+        moves.Enqueue(new Move("Move", null, new Coordinate(c.x, c.y + 1)), 0);
       }
 
       if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, board.getVerticalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y)), 0);
+        moves.Enqueue(new Move("Move", null, new Coordinate(c.x - 1, c.y)), 0);
       }
       if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, board.getVerticalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y)), 0);
+        moves.Enqueue(new Move("Move", null, new Coordinate(c.x + 1, c.y)), 0);
       }
 
       // todo jump
@@ -67,7 +67,7 @@ namespace quoridor_webAPI.Data.Models {
         Coordinate vectorToOpponent = new Coordinate(opponentC.x-c.x,opponentC.y-c.y);
         if(vectorToOpponent.x == 0 && vectorToOpponent.y == 1){ //opponet on top
           if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls())){//jump ?
-              //moves.Add(new move()) // todo add correctly jump (+0, +2)
+              //moves.Enqueue(new move()) // todo add correctly jump (+0, +2)
           }
           else{//try diagonal jump
             if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls()))
@@ -82,7 +82,7 @@ namespace quoridor_webAPI.Data.Models {
         }
         if(vectorToOpponent.x == 0 && vectorToOpponent.y == -1){//opponet from below
           if(!checkWallsToTheBottom(opponentC, board.getHorizontalWalls())){//jump ?
-              //moves.Add(new move()) // todo add correctly jump (+0, -2)
+              //moves.Enqueue(new move()) // todo add correctly jump (+0, -2)
           }
           else{//try diagonal jump
             if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls()))
@@ -97,7 +97,7 @@ namespace quoridor_webAPI.Data.Models {
         }
         if(vectorToOpponent.x == 1 && vectorToOpponent.y == 0){//opponet on the right
           if(!checkWallsToTheRight(opponentC, board.getVerticalWalls())){//jump ?
-              //moves.Add(new move()) // todo add correctly jump (+2, 0)
+              //moves.Enqueue(new move()) // todo add correctly jump (+2, 0)
           }
           else{//try diagonal jump
             if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls()))
@@ -112,7 +112,7 @@ namespace quoridor_webAPI.Data.Models {
         }
         if(vectorToOpponent.x == -1 && vectorToOpponent.y == 0){//opponet on the left
           if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls())){//jump ?
-              //moves.Add(new move()) // todo add correctly jump (-2, 0)
+              //moves.Enqueue(new move()) // todo add correctly jump (-2, 0)
           }
           else{//try diagonal jump
             if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls()))
@@ -149,8 +149,8 @@ namespace quoridor_webAPI.Data.Models {
       return distanceOpponent - distancePlayer;
     }
 
-    private static Dictionary < Move, int > getPossibleWallMoves(Player player, Board board, List < Player > players) {
-      Dictionary < Move, int > moves = new Dictionary < Move, int > ();
+    private static PriorityQueue < Move, int > getPossibleWallMoves(Player player, Board board, List < Player > players) {
+      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
 
       if (player.amountOfWalls > 0) {
         List < Coordinate > vW = board.getVerticalWalls();
@@ -185,7 +185,7 @@ namespace quoridor_webAPI.Data.Models {
           } else {
             // todo rate quick?
           }
-          moves.Add(new Move("PutWall", "vertical", w), rate);
+          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
         });
 
         hMoveW.ForEach(w => {
@@ -199,7 +199,7 @@ namespace quoridor_webAPI.Data.Models {
           } else {
             // todo rate quick
           }
-          moves.Add(new Move("PutWall", "horizontal", w), rate);
+          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
         });
       }
 
