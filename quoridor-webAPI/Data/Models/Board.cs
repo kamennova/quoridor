@@ -23,5 +23,17 @@ public class Board {
             horizontalWallCoordinates.Add(coordinate);
         }
     }
+
+    public void applyWallMove(Move move) {
+//     if (move.type == "PutWall") {
+                    if (move.wallType == "horizontal") {
+                        this.getHorizontalWalls().Add(move.coordinate);
+                    } else {
+                        this.getVerticalWalls().Add(move.coordinate);
+                    }
+//                } else {
+//                    this.players[currentTurn].coordinate = move.coordinate;
+//                }
+    }
 }
 }

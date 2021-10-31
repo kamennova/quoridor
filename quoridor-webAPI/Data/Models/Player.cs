@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace quoridor_webAPI.Data.Models
 {
-    public class Player
-    {
+    public class Player {
         public Player(int id) {
             this.Id = id;
         }

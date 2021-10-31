@@ -44,25 +44,8 @@ namespace quoridor_webAPI.Data.Models {
       string command = input[0];
 
       if (command == "black" || command == "white") {
-        if (command == "black") {
-          Player[] playersArr = {
-            player,
-            bot
-          };
-
-          List < Player > players = new List < Player > (playersArr);
-
-          this.game = new Game(players);
-        } else {
-          Player[] playersArr = {
-          bot,
-            player
-          };
-
-          List < Player > players = new List < Player > (playersArr);
-
-          this.game = new Game(players);
-        }
+        bot.isWhite = command == "white";
+        this.game = new Game();
         game.start();
       } else if (command == "move" || command == "wall" || command == "jump") {
         Move move = getMove(input);
@@ -85,9 +68,9 @@ namespace quoridor_webAPI.Data.Models {
           log("Game over, winner: " + game.winnerId);
         }
 
-        if (game.players[game.getTurn()].Id == 0) { // todo
+        if (game.getTurn() == 0) { // todo
 
-          game.makeMove(bot.getMove(game.board, game.players));
+          game.makeMove(bot.getMove(game.state));
 
           if (!game.getIsOn() && game.winnerId != null) {
             Console.WriteLine(game.winnerId);

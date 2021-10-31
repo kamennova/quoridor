@@ -4,51 +4,20 @@ namespace quoridor_webAPI.Data.Models
 {
     public class Node
         {
-            public bool isAllyTurn { get; } // true == your turn; false ==enemy turn
-            public Move currentPosition { get; }
-            //Node parantNode { get; set; }
-            public List<Node> childNodes { get; set; }
+            public Move move { get; }
+            public int rate;
+//            public PriorityQueue<int, Node> children { get; set; }
+            public List<Node> children { get; set; }
 
-            public Node (Move currentPosition, bool isAllyTurn)
+            public Node (Move move, int rate)
             {
-                this.currentPosition = currentPosition;
-                this.isAllyTurn = isAllyTurn;
-            }
-            public void Insert(Node currentMove) {
-                if (!childNodes.Contains(currentMove))
-                {
-                    childNodes.Add(currentMove);
-                }
-            }
-            public Node OneLevelSearch(Move desiredMove) //not deep, but fast
-            {
-                foreach(Node node in childNodes)
-                {
-                    if (desiredMove.Equals(node.currentPosition))
-                    {
-                        return node;
-                    }
-                }
-                return null;
+                this.move = move;
+                this.rate = rate;
             }
 
-            public Node DeepSearch(Node currentNode, Move desiredMove) //deep, but not fast
-            {
-                if(currentNode.currentPosition == desiredMove)
-                { return currentNode; }
-                if (currentNode.childNodes.Count != 0)
-                {
-                    foreach (Node node in currentNode.childNodes)
-                    {
-                        Node temp = DeepSearch(node, desiredMove);
-                        if (temp != null) { return temp; }
-                    }
-                    return null;
-                }
-                else return null;
-
+            public void Insert(Node node) {
+                    children.Add(node);
+//                children.Enqueue(node.rate, node);
             }
-
-            public Move GetCurrent() { return currentPosition; }
         }   
 }

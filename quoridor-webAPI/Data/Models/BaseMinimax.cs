@@ -9,19 +9,14 @@ namespace quoridor_webAPI.Data.Models {
       Console.WriteLine(s);
     }
 
-    bool isAllyTurn {
-      get;
-      set;
-    }
-
-    public static Dictionary < Move, int > getPossibleMoves(Player player, Board board, List < Player > players) {
-      Dictionary < Move, int > steps = getPossibleStepMoves(player, board, players);
+    public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
+      Dictionary < Move, int > steps = getPossibleStepMoves(state, turn);
 
       foreach(var s in steps) {
         log(s.Key.coordinate.x + " " + s.Key.coordinate.y);
       }
 
-      Dictionary < Move, int > walls = getPossibleWallMoves(player, board, players);
+      Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
       log("walls " + walls.Count);
 
       return steps;
@@ -38,44 +33,47 @@ namespace quoridor_webAPI.Data.Models {
       return walls;
     }
 
-    private static Dictionary < Move, int > getPossibleStepMoves(Player player, Board board, List < Player > players) {
-
+    private static Dictionary < Move, int > getPossibleStepMoves(GameState state, int turn) {
+      PlayerState player = state.getPlayer(turn);
       Coordinate c = player.coordinate;
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
-      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, board.getHorizontalWalls())) {
+      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls())) {
         moves.Add(new Move("Move", null, new Coordinate(c.x, c.y - 1)), 0);
       }
 
-      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, board.getHorizontalWalls())) { // check top
+      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls())) { // check top
         moves.Add(new Move("Move", null, new Coordinate(c.x, c.y + 1)), 0);
       }
 
-      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, board.getVerticalWalls())) {
+      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls())) {
         moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y)), 0);
       }
-      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, board.getVerticalWalls())) {
+      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls())) {
         moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y)), 0);
       }
 
       // todo jump
-      Player opponent = players[0].Id == player.Id ? players[1] : players[0];
+      PlayerState opponent = state.getOpponent(turn);
       //  if (opponent.x === )
 
       return moves;
     }
 
-    private static int evaluateWallMove(Board board, List < Player > players, int playerId) {
-      Player opponent = players[0].Id == playerId ? players[1] : players[0];
-      Player player = players[1].Id == playerId ? players[1] : players[0];
+    private static int evaluateWallMove(GameState state, int turn) {
+      PlayerState opponent = state.getOpponent(turn);
+      PlayerState player = state.getPlayer(turn);
 
-      int distancePlayer = AStar.search(board, player.coordinate, 0); // todo goal
+      int playerGoal = player.color == "white" ? 8 : 0;
+      int opponentGoal = opponent.color == "white" ? 8 : 0;
+
+      int distancePlayer = AStar.search(state, player.coordinate, playerGoal);
 
       if (distancePlayer < 0) {
         return -1;
       }
 
-      int distanceOpponent = AStar.search(board, opponent.coordinate, 0); // todo goal
+      int distanceOpponent = AStar.search(state, opponent.coordinate, opponentGoal);
 
       if (distanceOpponent < 0) {
         return -1;
@@ -84,12 +82,12 @@ namespace quoridor_webAPI.Data.Models {
       return distanceOpponent - distancePlayer;
     }
 
-    private static Dictionary < Move, int > getPossibleWallMoves(Player player, Board board, List < Player > players) {
+    private static Dictionary < Move, int > getPossibleWallMoves(GameState state, int turn) {
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
-      if (player.amountOfWalls > 0) {
-        List < Coordinate > vW = board.getVerticalWalls();
-        List < Coordinate > hW = board.getHorizontalWalls();
+      if (state.getPlayer(turn).amountOfWalls > 0) {
+        List < Coordinate > vW = state.getVerticalWalls();
+        List < Coordinate > hW = state.getHorizontalWalls();
 
         List < Coordinate > vMoveW = generateWalls();
         List < Coordinate > hMoveW = generateWalls();
@@ -112,8 +110,8 @@ namespace quoridor_webAPI.Data.Models {
 
           // if touches other wall, check if can be passable with a star
           if (w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7 || vW.Exists(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)) ||
-            hW.Exists(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2))) {
-            rate = evaluateWallMove(board, players, player.Id);
+            hW.Exists(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2))) { // todo 2 at once
+            rate = evaluateWallMove(state, turn);
             if (rate < 0) {
               return;
             }
@@ -127,7 +125,7 @@ namespace quoridor_webAPI.Data.Models {
           int rate = 0;
           if (w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7 || hW.Exists(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)) ||
             vW.Exists(vOld => vOld.x == w.y && (vOld.x == w.x - 2 || vOld.x == w.x + 2))) {
-            rate = evaluateWallMove(board, players, player.Id);
+            rate = evaluateWallMove(state, turn);
             if (rate < 0) {
               return;
             }
@@ -141,29 +139,55 @@ namespace quoridor_webAPI.Data.Models {
       return moves;
     }
 
-    int EvaluateTheMove(Move move) // return value of move
+    int EvaluateMove(Move move) // return value of move
     {
+      if (move.type == "PutWall") {
+
+      } else {
+
+      }
       //ehristic algorithm?
       return 0;
     }
 
-    private void minimaxStep() {
+    private static void buildTree(Node node, GameState state, int turn, int depth) {
+      if (depth == 0) {
+        return;
+      }
 
+      Dictionary < Move, int > possibleMoves = getPossibleMoves(state, turn);
+      foreach(var move in possibleMoves) {
+        Node child = new Node(move.Key, move.Value);
+        node.Insert(child);
+        buildTree(child, state.applyMoveToNew(move.Key, turn), turn == 0 ? 1 : 0, depth - 1);
+      }
     }
 
-    public static Move ChooseMove(Board board, Player player, List < Player > players) {
-      Coordinate currentCoordinate = new Coordinate(0, 0);
-      //      Move currentMove = new Move("null", "null", currentCoordinate);
-      //      Node root = new Node(currentMove, isAllyTurn); //root of tree
-      //root.Insert(Node newMove)
-      //fill child nodes with variants
-      //      PriorityQueue < int, Node > possibleMovies = new PriorityQueue < int, Node > (); //store possible moves before alpha or bete pruning
-      //      foreach(Node node in root.childNodes) {
-      //        possibleMovies.Enqueue(EvaluateTheMove(node.currentPosition), node); //set value for every move
-      //      }
-      //finish function
-      //      return possibleMovies.Dequeue().currentPosition;
-      return new Move("null", "dfs", currentCoordinate);
+    private static Node selectNode(Node node, bool isMe) {
+      if (node.children.Count > 0) {
+        Node max = node.children[0];
+        node.children.ForEach(child => {
+          Node last = selectNode(child, !isMe);
+          int rate = isMe ? child.rate : -child.rate;
+          if (rate > max.rate) {
+            max = child;
+          }
+        });
+
+        node.rate = max.rate;
+      }
+
+      return node;
+    }
+
+    public static Move ChooseMove(GameState state, bool isWhite) {
+      int turn = isWhite ? 0 : 1;
+      Move zeroMove = new Move("null", "null", new Coordinate(0, 0));
+      Node root = new Node(zeroMove, 0);
+      buildTree(root, state, turn, 5);
+      Node best = selectNode(root, true);
+
+      return best.move;
     }
   }
 }

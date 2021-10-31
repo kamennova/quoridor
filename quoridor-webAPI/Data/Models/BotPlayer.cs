@@ -8,15 +8,13 @@ namespace quoridor_webAPI.Data.Models
     public class BotPlayer : Player
     {
 
+        public bool isWhite;
         public BotPlayer(int id) : base(id) {
+            this.isWhite = isWhite;
         }
 
-        public Move getMove(Board board, List<Player> players) {
-                return generateRandomMove(board, players);
-        }
-
-        private Move generateRandomMove(Board board, List<Player> players){
-            return BaseMinimax.ChooseMove(board, this, players);
+        public Move getMove(GameState state) {
+            return BaseMinimax.ChooseMove(state, isWhite);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace quoridor_webAPI.Data.Models
         }
 
         // goal is y axis value, return distance to goal or -1
-        public static int search(Board board, Coordinate start, int goal) {
+        public static int search(GameState state, Coordinate start, int goal) {
             return 0;
         }
     }
