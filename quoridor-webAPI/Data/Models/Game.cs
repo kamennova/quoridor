@@ -84,7 +84,15 @@ namespace quoridor_webAPI.Data.Models {
             }
 
             if (c.x != currentC.x && c.y != currentC.y) {
-                return "Diagonal moves not allowed";
+                Coordinate vectorMove(c.x - currentC.x, c.y - currentC.y);
+                if(Math.Abs(opponentC.x - currentC.x) +  Math.Abs(opponentC.y - currentC.y) != 1) //opponent near to player?
+                {
+                    return "Cannot jump because opponent is not near";
+                }
+                if(Math.Abs(opponentC.x - c.x) +  Math.Abs(opponentC.y - c.y) != 1) //opponent near endpoint?
+                {
+                    return "Cannot jump because opponent is not near";
+                }
             }
 
             if (c.x == currentC.x) {
