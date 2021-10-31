@@ -60,7 +60,72 @@ namespace quoridor_webAPI.Data.Models {
 
       // todo jump
       Player opponent = players[0].Id == player.Id ? players[1] : players[0];
-      //  if (opponent.x === )
+      Coordinate opponentC = opponent.coordinate;
+
+      if(Math.Abs(opponentC.x - c.x) +  Math.Abs(opponentC.y - c.y) == 1) //opponent near?
+      {
+        Coordinate vectorToOpponent = new Coordinate(opponentC.x-c.x,opponentC.y-c.y);
+        if(vectorToOpponent.x == 0 && vectorToOpponent.y == 1){ //opponet on top
+          if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls())){//jump ?
+              //moves.Add(new move()) // todo add correctly jump (+0, +2)
+          }
+          else{//try diagonal jump
+            if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls()))
+            {
+              // todo add correctly jump (+1, +1)
+            }
+            if(!checkWallsToTheRight(opponentC, board.getVerticalWalls()))
+            {
+              // todo add correctly jump (-1, +1)
+            }
+          }
+        }
+        if(vectorToOpponent.x == 0 && vectorToOpponent.y == -1){//opponet from below
+          if(!checkWallsToTheBottom(opponentC, board.getHorizontalWalls())){//jump ?
+              //moves.Add(new move()) // todo add correctly jump (+0, -2)
+          }
+          else{//try diagonal jump
+            if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls()))
+            {
+              // todo add correctly jump (+1, -1)
+            }
+            if(!checkWallsToTheRight(opponentC, board.getVerticalWalls()))
+            {
+              // todo add correctly jump (-1, -1)
+            }
+          }
+        }
+        if(vectorToOpponent.x == 1 && vectorToOpponent.y == 0){//opponet on the right
+          if(!checkWallsToTheRight(opponentC, board.getVerticalWalls())){//jump ?
+              //moves.Add(new move()) // todo add correctly jump (+2, 0)
+          }
+          else{//try diagonal jump
+            if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls()))
+            {
+              // todo add correctly jump (+1, +1)
+            }
+            if(!checkWallsToTheBottom(opponentC, board.getHorizontalWalls()))
+            {
+              // todo add correctly jump (+1, -1)
+            }
+          }
+        }
+        if(vectorToOpponent.x == -1 && vectorToOpponent.y == 0){//opponet on the left
+          if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls())){//jump ?
+              //moves.Add(new move()) // todo add correctly jump (-2, 0)
+          }
+          else{//try diagonal jump
+            if(!checkWallsToTheTop(opponentC, board.getHorizontalWalls()))
+            {
+              // todo add correctly jump (-1, +1)
+            }
+            if(!checkWallsToTheBottom(opponentC, board.getHorizontalWalls()))
+            {
+              // todo add correctly jump (-1, -1)
+            }
+          }
+        }
+      }
 
       return moves;
     }

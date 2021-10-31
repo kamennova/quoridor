@@ -84,7 +84,6 @@ namespace quoridor_webAPI.Data.Models {
             }
 
             if (c.x != currentC.x && c.y != currentC.y) {
-                Coordinate vectorMove(c.x - currentC.x, c.y - currentC.y);
                 if(Math.Abs(opponentC.x - currentC.x) +  Math.Abs(opponentC.y - currentC.y) != 1) //opponent near to player?
                 {
                     return "Cannot jump because opponent is not near";
