@@ -9,28 +9,18 @@ namespace quoridor_webAPI.Data.Models {
       Console.WriteLine(s);
     }
 
-<<<<<<< HEAD
     public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
       Dictionary < Move, int > steps = getPossibleStepMoves(state, turn);
-=======
-    bool isAllyTurn {
-      get;
-      set;
-    }
 
-    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board board, List < Player > players) {
-      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, board, players);
->>>>>>> 23318f41d1f404064ad39516ca4f13044e081523
+//    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board board, List < Player > players) {
+//      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, board, players);
 
       foreach(var s in steps) {
         log(s.Key.coordinate.x + " " + s.Key.coordinate.y);
       }
 
-<<<<<<< HEAD
       Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
-=======
-      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, board, players);
->>>>>>> 23318f41d1f404064ad39516ca4f13044e081523
+//      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, board, players);
       log("walls " + walls.Count);
 
       return steps;
@@ -81,8 +71,7 @@ namespace quoridor_webAPI.Data.Models {
               //moves.Enqueue(new move()) // todo add correctly jump (+0, +2)
           }
           else{//try diagonal jump
-            if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls()))
-            {
+            if(!checkWallsToTheLeft(opponentC, board.getVerticalWalls())) {
               // todo add correctly jump (+1, +1)
             }
             if(!checkWallsToTheRight(opponentC, board.getVerticalWalls()))
