@@ -9,19 +9,19 @@ namespace quoridor_webAPI.Data.Models {
       Console.WriteLine(s);
     }
 
-    public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
-      Dictionary < Move, int > steps = getPossibleStepMoves(state, turn);
+    public static PriorityQueue < Move, int > getPossibleMoves(GameState state, int turn) {
+      PriorityQueue < Move, int > steps = getPossibleStepMoves(state, turn);
 
 //    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board state, List < Player > players) {
 //      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
 
-      Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
+      PriorityQueue < Move, int > walls = getPossibleWallMoves(state, turn);
 //      log("steps " + steps.Count + " walls " + walls.Count); // todo investigate wall moves
 //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
         int temp = 0;
       foreach (var wall in walls) {
       if (temp < 5) {
-        steps.Add(wall.Key, wall.Value);
+        steps.Enqueue(wall.Key, wall.Value);
         temp++;
         }
       }
@@ -40,14 +40,14 @@ namespace quoridor_webAPI.Data.Models {
       return walls;
     }
 
-    private static Dictionary < Move, int > getPossibleStepMoves(GameState state, int turn) {
+    private static PriorityQueue < Move, int > getPossibleStepMoves(GameState state, int turn) {
       PlayerState player = state.getPlayer(turn);
 
 //    private static PriorityQueue < Move, int > getPossibleStepMoves(Player player, Board state, List < Player > players) {
 
       Coordinate c = player.coordinate;
 //      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
-      Dictionary < Move, int > moves = new Dictionary < Move, int > ();
+      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
 
       if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls())) {
         moves.Enqueue(new Move("Move", null, new Coordinate(c.x, c.y - 1)), 0);
@@ -92,10 +92,6 @@ namespace quoridor_webAPI.Data.Models {
             {
               // todo add correctly jump (+1, -1)
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> 569249a87e5b7175f2d70bf022fa480f80b4412c
             if(!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
             {
               // todo add correctly jump (-1, -1)
@@ -159,8 +155,8 @@ namespace quoridor_webAPI.Data.Models {
       return distanceOpponent - distancePlayer;
     }
 
-    private static Dictionary < Move, int > getPossibleWallMoves(GameState state, int turn) {
-      Dictionary < Move, int > moves = new Dictionary < Move, int > ();
+    private static PriorityQueue < Move, int > getPossibleWallMoves(GameState state, int turn) {
+      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
 
 //    private static PriorityQueue < Move, int > getPossibleWallMoves(Player player, Board state, List < Player > players) {
 //      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
@@ -198,7 +194,7 @@ namespace quoridor_webAPI.Data.Models {
             // todo rate quick?
           }
 //          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
-            moves.Add(new Move("PutWall", "vertical", w), rate);
+            moves.Enqueue(new Move("PutWall", "vertical", w), rate);
         });
 
         hMoveW.ForEach(w => {
@@ -213,7 +209,7 @@ namespace quoridor_webAPI.Data.Models {
             // todo rate quick
           }
 //          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
-          moves.Add(new Move("PutWall", "horizontal", w), rate);
+          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
         });
       }
 
@@ -245,7 +241,7 @@ namespace quoridor_webAPI.Data.Models {
         return;
       }
 
-      Dictionary < Move, int > possibleMoves = getPossibleMoves(state, turn);
+      PriorityQueue < Move, int > possibleMoves = getPossibleMoves(state, turn);
 
        PlayerState opponent = state.getOpponent(turn);
             PlayerState player = state.getPlayer(turn);
