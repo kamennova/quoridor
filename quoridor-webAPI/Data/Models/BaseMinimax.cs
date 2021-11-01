@@ -98,7 +98,6 @@ namespace quoridor_webAPI.Data.Models {
             {
               // todo add correctly jump (+1, -1)
             }
-
             if(!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
             {
               // todo add correctly jump (-1, -1)

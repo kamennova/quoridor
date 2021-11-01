@@ -11,6 +11,21 @@ namespace quoridor_webAPI.Data.Models {
     private int currentTurn = 0;
     public GameState state = new GameState();
 
+    public Game(List<Player> players)
+    {
+      //todo?
+    }
+
+    public Move getLastMove()
+    {//todo
+      Move nullMove = new Move(null,null,null);
+      return nullMove;
+    }
+    public int getWinnerId()
+    {//todo
+      return 0;
+    }
+
     private string validateMove(Move move) {
       if (move.type == "PutWall") {
         return validateWallMove(state.getPlayer(currentTurn), move.wallType);
