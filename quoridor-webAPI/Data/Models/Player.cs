@@ -16,7 +16,7 @@ namespace quoridor_webAPI.Data.Models
 
         public int amountOfWalls = 10;
 
-        public Move makeMove(Board board, List<Player> players){
+        public Move makeMove(GameState state){
             return new Move("PutWall", "horizontal", new Coordinate(5, 0));
         }
 

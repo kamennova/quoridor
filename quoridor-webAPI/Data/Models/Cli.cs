@@ -68,7 +68,7 @@ namespace quoridor_webAPI.Data.Models {
           log("Game over, winner: " + game.winnerId);
         }
 
-        if (game.getTurn() == 0) { // todo
+        if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) { // todo
 
           game.makeMove(bot.getMove(game.state));
 

@@ -13,6 +13,7 @@ namespace quoridor_webAPI.Data.Models
             {
                 this.move = move;
                 this.rate = rate;
+                this.children = new List<Node> ();
             }
 
             public void Insert(Node node) {

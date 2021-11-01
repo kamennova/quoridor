@@ -17,5 +17,9 @@ namespace quoridor_webAPI.Data.Models
             this.coordinate = coordinate;
             this.wallType = wallType; // can be null, bad i know
        }
+
+       public override string ToString() {
+        return "[" + type + " " + coordinate +  (wallType != null ? " " + wallType + " " : "") + "]";
+       }
     }
 }

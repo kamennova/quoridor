@@ -20,5 +20,10 @@ namespace quoridor_webAPI.Data.Models {
                 return walls.Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y - 1);
             }
 
+           public static bool isOpponentNear(GameState state, Coordinate c, int turn) {
+               Coordinate c2 = state.getOpponent(turn).coordinate; // ??? todo turn + 1
+               return Math.Abs(c2.x - c.x) == 1 && Math.Abs(c2.y - c.y) == 1;
+           }
+
     }
 }

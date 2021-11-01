@@ -22,5 +22,13 @@ namespace quoridor_webAPI.Data.Models
                     Coordinate c = obj as Coordinate;
                     return c.x == this.x && c.y == this.y;
                 }
+
+         public override string ToString() {
+            return "( " + x + ", " + y + " )";
+         }
+
+         public override int GetHashCode() {
+            return x * 10 + y;
+         }
     }
 }
