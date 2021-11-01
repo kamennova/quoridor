@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace quoridor_webAPI.Data.Models {
   public class BaseMinimax {
-
+    public static bool doLog = true;
     private static void log(String s) {
-      Console.WriteLine(s);
+      if (doLog) {Console.WriteLine(s);}
     }
 
     public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
@@ -46,22 +46,28 @@ namespace quoridor_webAPI.Data.Models {
 //    private static PriorityQueue < Move, int > getPossibleStepMoves(Player player, Board state, List < Player > players) {
 
       Coordinate c = player.coordinate;
+      Coordinate c2 = state.getOpponent(turn).coordinate;
 //      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
-      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x, c.y - 1)), 0);
+      Coordinate bottom = new Coordinate(c.x, c.y - 1);
+      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls()) && c2 != bottom) {
+        moves.Add(new Move("Move", null, bottom), 0);
       }
 
-      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls())) { // check top
-        moves.Add(new Move("Move", null, new Coordinate(c.x, c.y + 1)), 0);
+      Coordinate top =  new Coordinate(c.x, c.y + 1);
+      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls()) && top != c2) { // check top
+        moves.Add(new Move("Move", null, top), 0);
       }
 
-      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y)), 0);
+      Coordinate left = new Coordinate(c.x - 1, c.y);
+      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls()) && left != c2) {
+        moves.Add(new Move("Move", null, left), 0);
       }
-      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls())) {
-        moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y)), 0);
+
+      Coordinate right = new Coordinate(c.x + 1, c.y);
+      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls()) && c2 != right) {
+        moves.Add(new Move("Move", null, right), 0);
       }
 
       Coordinate opponentC =  state.getOpponent(turn).coordinate;

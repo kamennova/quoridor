@@ -5,6 +5,7 @@ namespace quoridor_webAPI.Data.Models {
 
   public class GameCLI {
     private Game game;
+    private static bool doLog = true;
     BotPlayer bot = new BotPlayer(0);
     UserPlayer player = new UserPlayer(1);
 
@@ -22,8 +23,16 @@ namespace quoridor_webAPI.Data.Models {
       }
     }
 
+    private string coordToOut(Coordinate c, bool isWall) {
+        if (isWall) {
+            return ((char) ((int) 'S' + c.x)) + ("" + (8-c.y));
+        }
+
+        return ((char) ((int) 'A' + c.x)) + ("" + (9-c.y));
+    }
+
     private void log(String s) {
-      Console.WriteLine(s);
+      if (doLog) {Console.WriteLine(s);}
     }
 
     private Move getMove(string[] input) {
@@ -43,21 +52,45 @@ namespace quoridor_webAPI.Data.Models {
     public void executeCommand(string[] input) {
       string command = input[0];
 
-      if (command == "black" || command == "white") {
-        bot.isWhite = command == "white";
-        this.game = new Game();
-        game.start();
-      } else if (command == "move" || command == "wall" || command == "jump") {
+      if (command == "move" || command == "wall" || command == "jump") {
         Move move = getMove(input);
         string error = game.makeMove(move);
-        log(error);
+        Console.WriteLine(error);
       }
     }
 
-    public void run() {
-      Console.WriteLine("To start game enter black or white");
+    private string moveToOutput(Move move, Coordinate prev) {
+        Coordinate c = move.coordinate;
+        string cStr = coordToOut(move.coordinate, move.type == "PutWall");
+        string type;
 
+        if (move.type == "PutWall") {
+            type = "wall";
+        } else if (c.x != prev.x && c.y != prev.y || Math.Abs(c.x - prev.x) == 2 || Math.Abs(c.y - prev.y) == 2) {
+            type = "jump";
+        } else {
+            type = "move";
+        }
+
+        return type + " " + cStr;
+    }
+
+    private void move() {
+       Coordinate prev = (bot.isWhite ? game.state.whiteState : game.state.blackState).coordinate;
+       Move botMove = bot.getMove(game.state);
+       game.makeMove(botMove);
+       Console.WriteLine(moveToOutput(botMove, prev));
+    }
+
+    public void run(string color) {
       string input;
+      bot.isWhite = color == "white";
+      this.game = new Game();
+      game.start();
+
+      if (bot.isWhite) {
+        move();
+      }
 
       do {
         input = Console.ReadLine();
@@ -69,23 +102,25 @@ namespace quoridor_webAPI.Data.Models {
         }
 
         if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) { // todo
-
-          game.makeMove(bot.getMove(game.state));
+          move();
 
           if (!game.getIsOn() && game.winnerId != null) {
             Console.WriteLine(game.winnerId);
             log("Game over, winner: " + game.winnerId);
           }
         }
-
       } while (input != "exit");
-
-      Console.WriteLine("Bye!");
     }
 
     public static void Main(String[] args) {
       GameCLI gameCli = new GameCLI();
-      gameCli.run();
+
+      if (args[1] == "no-log") {
+        doLog = false;
+        BaseMinimax.doLog = false;
+      }
+
+      gameCli.run(args[0]);
     }
   }
 }

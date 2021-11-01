@@ -90,8 +90,6 @@ namespace quoridor_webAPI.Data.Models {
       }
 
       if (c.x == currentC.x) {
-        Console.WriteLine("vertical move");
-
         if (Math.Abs(c.y - currentC.y) == 1) { // step
           if (currentC.y - c.y == 1) { // step up
             if (MoveValidator.checkWallsToTheTop(currentC, state.getHorizontalWalls())) {
@@ -114,8 +112,6 @@ namespace quoridor_webAPI.Data.Models {
           }
         }
       } else {
-        Console.WriteLine("horizontal move");
-
         if (Math.Abs(c.x - currentC.x) == 1) { // step
           if (currentC.x - c.x > 0) { // step left
             if (MoveValidator.checkWallsToTheLeft(currentC, state.getVerticalWalls())) {
