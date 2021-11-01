@@ -27,7 +27,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private void applyMoveToState(GameState state, Move move, int turn) {
-      PlayerState player = getPlayer(turn);
+      PlayerState player = state.getPlayer(turn);
 
       if (move.type == "PutWall") {
         player.amountOfWalls--;
@@ -53,12 +53,21 @@ namespace quoridor_webAPI.Data.Models {
 
     public GameState copy() {
       GameState state = new GameState();
-      state.horizontalWalls = horizontalWalls; // todo copies
-      state.verticalWalls = verticalWalls;
+
+      state.horizontalWalls = copyWalls(horizontalWalls); // todo copies
+      state.verticalWalls = copyWalls(verticalWalls);
       state.whiteState = whiteState.copy();
       state.blackState = blackState.copy();
 
       return state;
+    }
+
+    private List<Coordinate> copyWalls(List<Coordinate> walls) {
+        List<Coordinate> copy = new List<Coordinate> ();
+
+        walls.ForEach(w => copy.Add(new Coordinate(w.x, w.y)));
+
+        return copy;
     }
   }
 }
