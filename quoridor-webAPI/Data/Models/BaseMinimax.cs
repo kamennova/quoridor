@@ -51,22 +51,22 @@ namespace quoridor_webAPI.Data.Models {
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
       Coordinate bottom = new Coordinate(c.x, c.y - 1);
-      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls()) && c2 != bottom) {
+      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls()) && !c2.Equals(bottom)) {
         moves.Add(new Move("Move", null, bottom), 0);
       }
 
-      Coordinate top =  new Coordinate(c.x, c.y + 1);
-      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls()) && top != c2) { // check top
+      Coordinate top = new Coordinate(c.x, c.y + 1);
+      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls()) && !top.Equals(c2)) { // check top
         moves.Add(new Move("Move", null, top), 0);
       }
 
       Coordinate left = new Coordinate(c.x - 1, c.y);
-      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls()) && left != c2) {
+      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls()) && !left.Equals(c2)) {
         moves.Add(new Move("Move", null, left), 0);
       }
 
       Coordinate right = new Coordinate(c.x + 1, c.y);
-      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls()) && c2 != right) {
+      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls()) && !c2.Equals(right)) {
         moves.Add(new Move("Move", null, right), 0);
       }
 
@@ -284,8 +284,7 @@ namespace quoridor_webAPI.Data.Models {
         max = node.children[0];
         node.children.ForEach(child => {
           Node last = selectNode(child, !isMe, false);
-          int rate = isMe ? last.rate : last.rate;
-          if (rate > max.rate) {
+          if (last.rate > max.rate) {
             max = child;
           }
         });

@@ -13,11 +13,11 @@ namespace quoridor_webAPI.Data.Models {
             }
 
             public static bool checkWallsToTheTop(Coordinate currentC, List<Coordinate> walls) {
-                return walls.Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y);
+                return walls.Exists(w => (currentC.x == w.x || currentC.x == w.x + 1) && currentC.y == w.y);
             }
 
            public static bool checkWallsToTheBottom(Coordinate currentC, List<Coordinate> walls) {
-                return walls.Exists(w => (currentC.x == w.x || currentC.x == w.x - 1) && currentC.y == w.y - 1);
+                return walls.Exists(w => (currentC.x == w.x || currentC.x == w.x + 1) && currentC.y == w.y + 1);
             }
 
            public static bool isOpponentNear(GameState state, Coordinate c, int turn) {

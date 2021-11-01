@@ -31,7 +31,7 @@ namespace quoridor_webAPI.Data.Models {
         return ((char) ((int) 'A' + c.x)) + ("" + (9-c.y));
     }
 
-    private void log(String s) {
+    private static void log(String s) {
       if (doLog) {Console.WriteLine(s);}
     }
 
@@ -55,7 +55,7 @@ namespace quoridor_webAPI.Data.Models {
       if (command == "move" || command == "wall" || command == "jump") {
         Move move = getMove(input);
         string error = game.makeMove(move);
-        Console.WriteLine(error);
+        if (error != null) {Console.WriteLine(error);}
       }
     }
 
@@ -84,7 +84,7 @@ namespace quoridor_webAPI.Data.Models {
 
     public void run(string color) {
       string input;
-      bot.isWhite = color == "white";
+      bot.isWhite = color == "White";
       this.game = new Game();
       game.start();
 
