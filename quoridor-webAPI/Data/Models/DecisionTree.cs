@@ -9,9 +9,9 @@ namespace quoridor_webAPI.Data.Models
 //            public PriorityQueue<int, Node> children { get; set; }
             public List<Node> children { get; set; }
 
-            public Node (Move move, int rate)
+            public Node (Coordinate startPoint, int rate)
             {
-                this.move = move;
+                this.move = new Move ("setPosition", null, startPoint);
                 this.rate = rate;
                 this.children = new List<Node> ();
             }
