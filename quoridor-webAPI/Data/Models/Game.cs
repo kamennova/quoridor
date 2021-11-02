@@ -143,7 +143,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private bool CheckIsGameOver() {
-      return false;
+      return state.whiteState.coordinate.y == 8 || state.blackState.coordinate.y == 0;
     }
 
     public string makeMove(Move move) {

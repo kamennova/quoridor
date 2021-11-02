@@ -63,6 +63,7 @@ namespace quoridor_webAPI.Data.Models {
         Coordinate c = move.coordinate;
         string cStr = coordToOut(move.coordinate, move.type == "PutWall");
         string type;
+        string wallType = move.type == "PutWall" ? (move.wallType == "horizontal" ? "h" : "v") : "";
 
         if (move.type == "PutWall") {
             type = "wall";
@@ -72,7 +73,7 @@ namespace quoridor_webAPI.Data.Models {
             type = "move";
         }
 
-        return type + " " + cStr;
+        return type + " " + cStr + wallType;
     }
 
     private void move() {
@@ -84,7 +85,7 @@ namespace quoridor_webAPI.Data.Models {
 
     public void run(string color) {
       string input;
-      bot.isWhite = color == "White";
+      bot.isWhite = color == "white";
       this.game = new Game();
       game.start();
 
@@ -97,30 +98,32 @@ namespace quoridor_webAPI.Data.Models {
         executeCommand(input.Split(" "));
 
         if (!game.getIsOn() && game.winnerId != null) {
-          Console.WriteLine(game.winnerId);
           log("Game over, winner: " + game.winnerId);
+          return;
         }
 
         if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) { // todo
           move();
 
           if (!game.getIsOn() && game.winnerId != null) {
-            Console.WriteLine(game.winnerId);
             log("Game over, winner: " + game.winnerId);
+            return;
           }
         }
-      } while (input != "exit");
+      } while (input != "exit" || !(!game.getIsOn() && game.winnerId != null));
     }
 
     public static void Main(String[] args) {
       GameCLI gameCli = new GameCLI();
+      string input = Console.ReadLine();
+      string color = (input == "white" || input == "black") ? input : args[0]; // todo lowercase?
 
       if (args[1] == "no-log") {
         doLog = false;
         BaseMinimax.doLog = false;
       }
 
-      gameCli.run(args[0]);
+      gameCli.run(color);
     }
   }
 }
