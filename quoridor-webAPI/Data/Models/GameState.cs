@@ -63,11 +63,11 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private List<Coordinate> copyWalls(List<Coordinate> walls) {
-        List<Coordinate> copy = new List<Coordinate> ();
+        List<Coordinate> c = new List<Coordinate> ();
 
-        walls.ForEach(w => copy.Add(new Coordinate(w.x, w.y)));
+        walls.ForEach(w => c.Add(new Coordinate(w.x, w.y)));
 
-        return copy;
+        return c;
     }
   }
 }

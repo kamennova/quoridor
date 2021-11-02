@@ -7,10 +7,8 @@ namespace quoridor_webAPI.Data.Models
 {
     public class BotPlayer : Player
     {
-
         public bool isWhite;
         public BotPlayer(int id) : base(id) {
-            this.isWhite = isWhite;
         }
 
         public Move getMove(GameState state) {

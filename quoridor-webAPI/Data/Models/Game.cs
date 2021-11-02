@@ -11,41 +11,30 @@ namespace quoridor_webAPI.Data.Models {
     private int currentTurn = 0;
     public GameState state = new GameState();
 
-    public Game(List<Player> players)
-    {
-      //todo?
-    }
-
-    public Move getLastMove()
-    {//todo
-      Move nullMove = new Move(null,null,null);
-      return nullMove;
-    }
-    public int getWinnerId()
-    {//todo
-      return 0;
+    public int getWinnerId() {//todo
+      return currentTurn;
     }
 
     private string validateMove(Move move) {
       if (move.type == "PutWall") {
-        return validateWallMove(state.getPlayer(currentTurn), move.wallType);
+        return validateWallMove(move, state.getPlayer(currentTurn));
       } else {
         return validateStepMove(move.coordinate);
       }
     }
 
-    private string validateWallMove(PlayerState player, string wallType) {
-      if (player.amountOfWalls == 0) {
+    private string validateWallMove(Move move, PlayerState playerState) {
+      if (playerState.amountOfWalls == 0) {
         return "No more walls";
       }
 
-      Coordinate c = player.coordinate;
+      Coordinate c = move.coordinate;
       if (c.x < 0 || c.x > 7 || c.y < 0 || c.y > 7) {
         return "Over state";
       }
 
       // intersection
-      if (wallType == "horizontal") {
+      if (move.wallType == "horizontal") {
         if (state.getHorizontalWalls().Exists(w => w.y == c.y && (w.x == c.x || w.x - 1 == c.x)) || // todo contains
           state.getVerticalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
           return "Walls intersect";
@@ -105,8 +94,6 @@ namespace quoridor_webAPI.Data.Models {
       }
 
       if (c.x == currentC.x) {
-        Console.WriteLine("vertical move");
-
         if (Math.Abs(c.y - currentC.y) == 1) { // step
           if (currentC.y - c.y == 1) { // step up
             if (MoveValidator.checkWallsToTheTop(currentC, state.getHorizontalWalls())) {
@@ -129,8 +116,6 @@ namespace quoridor_webAPI.Data.Models {
           }
         }
       } else {
-        Console.WriteLine("horizontal move");
-
         if (Math.Abs(c.x - currentC.x) == 1) { // step
           if (currentC.x - c.x > 0) { // step left
             if (MoveValidator.checkWallsToTheLeft(currentC, state.getVerticalWalls())) {
@@ -158,7 +143,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private bool CheckIsGameOver() {
-      return false;
+      return state.whiteState.coordinate.y == 8 || state.blackState.coordinate.y == 0;
     }
 
     public string makeMove(Move move) {
