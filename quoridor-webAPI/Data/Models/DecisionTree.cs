@@ -19,5 +19,5 @@ namespace quoridor_webAPI.Data.Models
                     children.Add(node);
 //                children.Enqueue(node.rate, node);
             }
-        }   
+        }
 }

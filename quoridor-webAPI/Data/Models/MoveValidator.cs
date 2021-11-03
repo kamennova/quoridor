@@ -22,7 +22,7 @@ namespace quoridor_webAPI.Data.Models {
 
            public static bool isOpponentNear(GameState state, Coordinate c, int turn) {
                Coordinate c2 = state.getOpponent(turn).coordinate; // ??? todo turn + 1
-               return Math.Abs(c2.x - c.x) == 1 && Math.Abs(c2.y - c.y) == 1;
+               return Math.Abs(c2.x - c.x) + Math.Abs(c2.y - c.y) == 1;
            }
 
            public static List<Move> getPossibleSimpleStepMoves(Coordinate c, GameState state) {

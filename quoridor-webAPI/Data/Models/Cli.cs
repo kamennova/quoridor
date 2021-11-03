@@ -79,7 +79,10 @@ namespace quoridor_webAPI.Data.Models {
     private void move() {
        Coordinate prev = (bot.isWhite ? game.state.whiteState : game.state.blackState).coordinate;
        Move botMove = bot.getMove(game.state);
-       game.makeMove(botMove);
+       string error = game.makeMove(botMove);
+       if (error != null) {
+            Console.WriteLine("Bot error, " + error + " " + moveToOutput(botMove, prev));
+       }
        Console.WriteLine(moveToOutput(botMove, prev));
     }
 
@@ -87,6 +90,9 @@ namespace quoridor_webAPI.Data.Models {
       string input;
       bot.isWhite = color == "white";
       this.game = new Game();
+      if (!doLog) {
+        game.doLog = false;
+      }
       game.start();
 
       if (bot.isWhite) {

@@ -55,67 +55,65 @@ namespace quoridor_webAPI.Data.Models {
       moves.Add(m, 0);
       }});
 
-      Coordinate opponentC =  state.getOpponent(turn).coordinate;
+      List<Coordinate> hW =  state.getHorizontalWalls();
+      List<Coordinate> vW = state.getVerticalWalls();
 
-      if(Math.Abs(opponentC.x - c.x) +  Math.Abs(opponentC.y - c.y) == 1) //opponent near?
-      {
-        Coordinate vectorToOpponent = new Coordinate(opponentC.x-c.x,opponentC.y-c.y);
-        if(vectorToOpponent.x == 0 && vectorToOpponent.y == 1){ //opponet on top
-          if(!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls())){//jump ?
-              //moves.Enqueue(new move()) // todo add correctly jump (+0, +2)
+      if (MoveValidator.isOpponentNear(state, c, turn)) {
+        Coordinate vectorToOpponent = new Coordinate(c2.x-c.x, c2.y-c.y);
+
+        if (vectorToOpponent.x == 0 && vectorToOpponent.y == 1) { // opponent on top
+          if (!MoveValidator.checkWallsToTheTop(c, hW)) { // can jump at least 1 up
+
+          if (!MoveValidator.checkWallsToTheTop(c2, hW)) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x, c.y + 2)), 0);
           }
-          else{//try diagonal jump
-            if(!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls())) {
-              // todo add correctly jump (+1, +1)
+            if (!MoveValidator.checkWallsToTheLeft(c2, state.getVerticalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
-            if(!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
+
+            if (!MoveValidator.checkWallsToTheRight(c2, state.getVerticalWalls()))
             {
-              // todo add correctly jump (-1, +1)
-            }
-          }
-        }
-        if(vectorToOpponent.x == 0 && vectorToOpponent.y == -1){//opponet from below
-          if(!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls())){//jump ?
-              //moves.Enqueue(new move()) // todo add correctly jump (+0, -2)
-          }
-          else{//try diagonal jump
-            if(!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls()))
-            {
-              // todo add correctly jump (+1, -1)
-            }
-            if(!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
-            {
-              // todo add correctly jump (-1, -1)
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y + 1)), 0);
             }
           }
-        }
-        if(vectorToOpponent.x == 1 && vectorToOpponent.y == 0){//opponet on the right
-          if(!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls())){//jump ?
-              //moves.Enqueue(new move()) // todo add correctly jump (+2, 0)
+        } else if (vectorToOpponent.x == 0 && vectorToOpponent.y == -1) {//opponent from below
+        if(!MoveValidator.checkWallsToTheBottom(c, hW)){
+          if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())){//jump ?
+              moves.Add(new Move("Move", null, new Coordinate(c.x, c.y - 2)), 0);
           }
-          else{//try diagonal jump
-            if(!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls()))
+            if(!MoveValidator.checkWallsToTheLeft(c2, vW))
             {
-              // todo add correctly jump (+1, +1)
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y - 1)), 0);
             }
-            if(!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls()))
+            if(!MoveValidator.checkWallsToTheRight(c2, state.getVerticalWalls()))
             {
-              // todo add correctly jump (+1, -1)
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
             }
           }
-        }
-        if(vectorToOpponent.x == -1 && vectorToOpponent.y == 0){//opponet on the left
-          if(!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls())){//jump ?
-              //moves.Enqueue(new move()) // todo add correctly jump (-2, 0)
+        } else if (vectorToOpponent.x == 1 && vectorToOpponent.y == 0){ // opponent on the right
+        if(!MoveValidator.checkWallsToTheRight(c, vW)){
+          if(!MoveValidator.checkWallsToTheRight(c2, vW)){
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
           }
-          else{//try diagonal jump
-            if(!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls()))
-            {
-              // todo add correctly jump (-1, +1)
+            if(!MoveValidator.checkWallsToTheTop(c2, hW)){
+              moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
-            if(!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls()))
-            {
-              // todo add correctly jump (-1, -1)
+            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+            }
+          }
+        } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
+        if(!MoveValidator.checkWallsToTheLeft(c, vW)){
+          if(!MoveValidator.checkWallsToTheLeft(c2, vW)){//jump ?
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
+          }
+
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
+            }
+
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
             }
           }
         }
