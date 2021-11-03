@@ -39,8 +39,8 @@ namespace quoridor_webAPI.Data.Models {
           state.getVerticalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
           return "Walls intersect";
         }
-      } else if (state.getHorizontalWalls().Exists(w => w.y == c.y && (w.x == c.x || w.x - 1 == c.x)) || //todo for vertical
-        state.getVerticalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
+      } else if (state.getVerticalWalls().Exists(w => w.x == c.x && (w.y == c.y || w.y - 1 == c.y)) ||
+        state.getHorizontalWalls().Exists(w => w.y == c.y && w.x == c.x)) {
         return "Walls intersect";
       }
 
@@ -68,7 +68,6 @@ namespace quoridor_webAPI.Data.Models {
     private string validateStepMove(Coordinate c) {
       Coordinate opponentC = state.getOpponent(currentTurn).coordinate;
       Coordinate currentC = state.getPlayer(currentTurn).coordinate;
-
       if (c.x < 0 || c.x > 8 || c.y < 0 || c.y > 8) {
         return "Move over board";
       }
@@ -95,12 +94,12 @@ namespace quoridor_webAPI.Data.Models {
 
       if (c.x == currentC.x) {
         if (Math.Abs(c.y - currentC.y) == 1) { // step
-          if (currentC.y - c.y == 1) { // step up
-            if (MoveValidator.checkWallsToTheTop(currentC, state.getHorizontalWalls())) {
-              return "Cannot move across wall";
+          if (currentC.y - c.y == 1) { // step down
+            if (MoveValidator.checkWallsToTheBottom(currentC, state.getHorizontalWalls())) {
+              return "Cannot move across wall at the bottom";
             }
-          } else if (MoveValidator.checkWallsToTheBottom(currentC, state.getHorizontalWalls())) {
-            return "Cannot move across wall";
+          } else if (MoveValidator.checkWallsToTheTop(currentC, state.getHorizontalWalls())) {
+            return "Cannot move across wall at the top";
           }
         } else {
           if (currentC.x != opponentC.x || Math.Abs(currentC.y - opponentC.y) != 1) {
@@ -115,14 +114,14 @@ namespace quoridor_webAPI.Data.Models {
             return WALL_ERR;
           }
         }
-      } else {
+      } else if (c.y == currentC.y) {
         if (Math.Abs(c.x - currentC.x) == 1) { // step
           if (currentC.x - c.x > 0) { // step left
             if (MoveValidator.checkWallsToTheLeft(currentC, state.getVerticalWalls())) {
-              return "Cannot move across wall";
+              return "Cannot move across wall on the left";
             }
           } else if (MoveValidator.checkWallsToTheRight(currentC, state.getVerticalWalls())) {
-            return "Cannot move across wall";
+            return "Cannot move across wall on the right";
           }
         } else { // jump over
           if (currentC.y != opponentC.y || Math.Abs(currentC.x - opponentC.x) != 1) {
