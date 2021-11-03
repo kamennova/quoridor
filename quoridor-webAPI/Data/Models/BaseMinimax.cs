@@ -50,25 +50,10 @@ namespace quoridor_webAPI.Data.Models {
 //      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
-      Coordinate bottom = new Coordinate(c.x, c.y - 1);
-      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls()) && !c2.Equals(bottom)) {
-        moves.Add(new Move("Move", null, bottom), 0);
-      }
-
-      Coordinate top = new Coordinate(c.x, c.y + 1);
-      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls()) && !top.Equals(c2)) { // check top
-        moves.Add(new Move("Move", null, top), 0);
-      }
-
-      Coordinate left = new Coordinate(c.x - 1, c.y);
-      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls()) && !left.Equals(c2)) {
-        moves.Add(new Move("Move", null, left), 0);
-      }
-
-      Coordinate right = new Coordinate(c.x + 1, c.y);
-      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls()) && !c2.Equals(right)) {
-        moves.Add(new Move("Move", null, right), 0);
-      }
+      MoveValidator.getPossibleSimpleStepMoves(c, state).ForEach(m => {
+         if (!c2.Equals(m.coordinate)) {
+      moves.Add(m, 0);
+      }});
 
       Coordinate opponentC =  state.getOpponent(turn).coordinate;
 
@@ -161,6 +146,34 @@ namespace quoridor_webAPI.Data.Models {
       return distanceOpponent - distancePlayer;
     }
 
+    private static bool touchesBoard(Coordinate w) {
+        return w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7;
+    }
+
+    private static int verticalTouchesWallsNum(Coordinate w, GameState state) {
+        int counter = 0;
+         if (touchesBoard(w)) {counter += 1;}
+
+         counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
+          if(counter < 2) {
+                    counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
+                    }
+
+        return counter;
+    }
+
+     private static int horizontalTouchesWallsNum(Coordinate w, GameState state) {
+            int counter = 0;
+             if (touchesBoard(w)) {counter += 1;}
+
+             counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
+              if(counter < 2) {
+                        counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
+                        }
+
+    return counter;
+        }
+
     private static Dictionary < Move, int > getPossibleWallMoves(GameState state, int turn) {
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
@@ -190,8 +203,7 @@ namespace quoridor_webAPI.Data.Models {
           int rate = 0;
 
           // if touches other wall, check if can be passable with a star
-          if (w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7 || vW.Exists(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)) ||
-            hW.Exists(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2))) { // todo 2 at once
+          if (verticalTouchesWallsNum(w, state) >= 2) {
             rate = evaluateWallMove(state, turn);
             if (rate < 0) {
               return;
@@ -205,8 +217,7 @@ namespace quoridor_webAPI.Data.Models {
 
         hMoveW.ForEach(w => {
           int rate = 0;
-          if (w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7 || hW.Exists(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)) ||
-            vW.Exists(vOld => vOld.x == w.y && (vOld.x == w.x - 2 || vOld.x == w.x + 2))) {
+          if (horizontalTouchesWallsNum(w, state) >= 2) {
             rate = evaluateWallMove(state, turn);
             if (rate < 0) {
               return;

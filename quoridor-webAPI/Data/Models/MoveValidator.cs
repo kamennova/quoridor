@@ -25,5 +25,30 @@ namespace quoridor_webAPI.Data.Models {
                return Math.Abs(c2.x - c.x) == 1 && Math.Abs(c2.y - c.y) == 1;
            }
 
+           public static List<Move> getPossibleSimpleStepMoves(Coordinate c, GameState state) {
+      List < Move> moves = new List<Move> ();
+
+      Coordinate bottom = new Coordinate(c.x, c.y - 1);
+      if (c.y > 0 && !MoveValidator.checkWallsToTheBottom(c, state.getHorizontalWalls())) {
+        moves.Add(new Move("Move", null, bottom));
+      }
+
+      Coordinate top = new Coordinate(c.x, c.y + 1);
+      if (c.y < 8 && !MoveValidator.checkWallsToTheTop(c, state.getHorizontalWalls())) { // check top
+        moves.Add(new Move("Move", null, top));
+      }
+
+      Coordinate left = new Coordinate(c.x - 1, c.y);
+      if (c.x > 0 && !MoveValidator.checkWallsToTheLeft(c, state.getVerticalWalls())) {
+        moves.Add(new Move("Move", null, left));
+      }
+
+      Coordinate right = new Coordinate(c.x + 1, c.y);
+      if (c.x < 8 && !MoveValidator.checkWallsToTheRight(c, state.getVerticalWalls())) {
+        moves.Add(new Move("Move", null, right));
+      }
+
+      return moves;
+           }
     }
 }
