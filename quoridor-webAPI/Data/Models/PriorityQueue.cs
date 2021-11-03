@@ -48,6 +48,11 @@ namespace quoridor_webAPI.Data.Models
             return item;
         }
 
+        public void Clear()
+        {
+            _storage.Clear();
+        }
+
         public IEnumerator<KeyValuePair<TPriority, TItem>> GetEnumerator()
         {
             var items = from pair in _storage
