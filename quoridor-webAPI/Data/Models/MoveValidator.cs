@@ -5,9 +5,9 @@ namespace quoridor_webAPI.Data.Models {
     public class MoveValidator {
 
      public static bool checkWallsToTheLeft(Coordinate currentC, List<Coordinate> walls) {
-                return walls.Exists(w => (currentC.y == w.y || currentC.y == w.y + 1) && currentC.x == w.x - 1);
+                return walls.Exists(w => (currentC.y == w.y || currentC.y == w.y + 1) && currentC.x == w.x + 1);
             }
-// 1,1 - 0, 0,, 0,1
+
            public static bool checkWallsToTheRight(Coordinate currentC, List<Coordinate> walls) {
                 return walls.Exists(w => (currentC.y == w.y || currentC.y == w.y + 1) && currentC.x == w.x);
             }
