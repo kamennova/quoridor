@@ -9,9 +9,10 @@ namespace quoridor_webAPI.Data.Models {
 
     private bool isOn = false;
     private int currentTurn = 0;
+    public bool doLog = true;
     public GameState state = new GameState();
 
-    public int getWinnerId() {//todo
+    public int getWinnerId() {
       return currentTurn;
     }
 
@@ -89,10 +90,33 @@ namespace quoridor_webAPI.Data.Models {
                       {
                           return "Cannot jump because opponent is not near";
                       }
-        return "Diagonal moves not allowed";
       }
 
-      if (c.x == currentC.x) {
+      if (Math.Abs(currentC.y - c.y) == 2) { // y only jump
+       if (currentC.x != opponentC.x || Math.Abs(currentC.y - opponentC.y) != 1) {
+                  return "Cannot jump because opponent is not near";
+                }
+
+                if (currentC.y - opponentC.y > 0) { // jump to bottom
+                  if (MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls())) {
+                    return WALL_ERR;
+                  }
+                } else if (MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls())) {
+                  return WALL_ERR;
+                }
+      } else if (Math.Abs(currentC.x - c.x) == 2) {
+                if (currentC.y != opponentC.y || Math.Abs(currentC.x - opponentC.x) != 1) {
+                  return "Cannot jump because opponent is not near";
+                }
+
+                if (currentC.x - opponentC.x > 0) { // jump to left
+                  if (MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls())) {
+                    return WALL_ERR;
+                  }
+                } else if (MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls())) {
+                  return WALL_ERR;
+                }
+      } else if (c.x == currentC.x) {
         if (Math.Abs(c.y - currentC.y) == 1) { // step
           if (currentC.y - c.y == 1) { // step down
             if (MoveValidator.checkWallsToTheBottom(currentC, state.getHorizontalWalls())) {
@@ -100,18 +124,6 @@ namespace quoridor_webAPI.Data.Models {
             }
           } else if (MoveValidator.checkWallsToTheTop(currentC, state.getHorizontalWalls())) {
             return "Cannot move across wall at the top";
-          }
-        } else {
-          if (currentC.x != opponentC.x || Math.Abs(currentC.y - opponentC.y) != 1) {
-            return "Cannot jump because opponent is not near";
-          }
-
-          if (currentC.y - opponentC.y > 0) { // jump to bottom
-            if (MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls())) {
-              return WALL_ERR;
-            }
-          } else if (MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls())) {
-            return WALL_ERR;
           }
         }
       } else if (c.y == currentC.y) {
@@ -122,18 +134,6 @@ namespace quoridor_webAPI.Data.Models {
             }
           } else if (MoveValidator.checkWallsToTheRight(currentC, state.getVerticalWalls())) {
             return "Cannot move across wall on the right";
-          }
-        } else { // jump over
-          if (currentC.y != opponentC.y || Math.Abs(currentC.x - opponentC.x) != 1) {
-            return "Cannot jump because opponent is not near";
-          }
-
-          if (currentC.x - opponentC.x > 0) { // jump to left
-            if (MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls())) {
-              return WALL_ERR;
-            }
-          } else if (MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls())) {
-            return WALL_ERR;
           }
         }
       }
@@ -169,7 +169,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private void log(String s) {
-      Console.WriteLine(s);
+      if (doLog) {Console.WriteLine(s);}
     }
 
     public void start() {

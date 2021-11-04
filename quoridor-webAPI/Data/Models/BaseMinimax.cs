@@ -19,18 +19,16 @@ namespace quoridor_webAPI.Data.Models
             //    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board state, List < Player > players) {
             //      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
 
-            Dictionary<Move, int> walls = getPossibleWallMoves(state, turn);
-            //      log("steps " + steps.Count + " walls " + walls.Count); // todo investigate wall moves
-            //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
-            int temp = 0;
-            foreach (var wall in walls)
-            {
-                if (temp < 5)
-                {
-                    steps.Add(wall.Key, wall.Value);
-                    temp++;
-                }
-            }
+      Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
+//      log("steps " + steps.Count + " walls " + walls.Count); // todo investigate wall moves
+//      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
+        int temp = 0;
+      foreach (var wall in walls) {
+//      if (temp < 80) {
+        steps.Add(wall.Key, wall.Value);
+        temp++;
+//        }
+      }
 
             return steps;
         }
@@ -68,84 +66,69 @@ namespace quoridor_webAPI.Data.Models
                 }
             });
 
-            Coordinate opponentC = state.getOpponent(turn).coordinate;
+      List<Coordinate> hW =  state.getHorizontalWalls();
+      List<Coordinate> vW = state.getVerticalWalls();
 
-            if (Math.Abs(opponentC.x - c.x) + Math.Abs(opponentC.y - c.y) == 1) //opponent near?
-            {
-                Coordinate vectorToOpponent = new Coordinate(opponentC.x - c.x, opponentC.y - c.y);
-                if (vectorToOpponent.x == 0 && vectorToOpponent.y == 1)
-                { //opponet on top
-                    if (!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls()))
-                    {//jump ?
-                     //moves.Enqueue(new move()) // todo add correctly jump (+0, +2)
-                    }
-                    else
-                    {//try diagonal jump
-                        if (!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls()))
-                        {
-                            // todo add correctly jump (+1, +1)
-                        }
-                        if (!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
-                        {
-                            // todo add correctly jump (-1, +1)
-                        }
-                    }
-                }
-                if (vectorToOpponent.x == 0 && vectorToOpponent.y == -1)
-                {//opponet from below
-                    if (!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls()))
-                    {//jump ?
-                     //moves.Enqueue(new move()) // todo add correctly jump (+0, -2)
-                    }
-                    else
-                    {//try diagonal jump
-                        if (!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls()))
-                        {
-                            // todo add correctly jump (+1, -1)
-                        }
-                        if (!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
-                        {
-                            // todo add correctly jump (-1, -1)
-                        }
-                    }
-                }
-                if (vectorToOpponent.x == 1 && vectorToOpponent.y == 0)
-                {//opponet on the right
-                    if (!MoveValidator.checkWallsToTheRight(opponentC, state.getVerticalWalls()))
-                    {//jump ?
-                     //moves.Enqueue(new move()) // todo add correctly jump (+2, 0)
-                    }
-                    else
-                    {//try diagonal jump
-                        if (!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls()))
-                        {
-                            // todo add correctly jump (+1, +1)
-                        }
-                        if (!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls()))
-                        {
-                            // todo add correctly jump (+1, -1)
-                        }
-                    }
-                }
-                if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0)
-                {//opponet on the left
-                    if (!MoveValidator.checkWallsToTheLeft(opponentC, state.getVerticalWalls()))
-                    {//jump ?
-                     //moves.Enqueue(new move()) // todo add correctly jump (-2, 0)
-                    }
-                    else
-                    {//try diagonal jump
-                        if (!MoveValidator.checkWallsToTheTop(opponentC, state.getHorizontalWalls()))
-                        {
-                            // todo add correctly jump (-1, +1)
-                        }
-                        if (!MoveValidator.checkWallsToTheBottom(opponentC, state.getHorizontalWalls()))
-                        {
-                            // todo add correctly jump (-1, -1)
-                        }
-                    }
-                }
+      if (MoveValidator.isOpponentNear(state, c, turn)) {
+        Coordinate vectorToOpponent = new Coordinate(c2.x-c.x, c2.y-c.y);
+
+        if (vectorToOpponent.x == 0 && vectorToOpponent.y == 1) { // opponent on top
+          if (!MoveValidator.checkWallsToTheTop(c, hW)) { // can jump at least 1 up
+
+          if (!MoveValidator.checkWallsToTheTop(c2, hW)) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x, c.y + 2)), 0);
+          }
+            if (!MoveValidator.checkWallsToTheLeft(c2, state.getVerticalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
+
+            if (!MoveValidator.checkWallsToTheRight(c2, state.getVerticalWalls()))
+            {
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y + 1)), 0);
+            }
+          }
+        } else if (vectorToOpponent.x == 0 && vectorToOpponent.y == -1) {//opponent from below
+        if(!MoveValidator.checkWallsToTheBottom(c, hW)){
+          if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())){//jump ?
+              moves.Add(new Move("Move", null, new Coordinate(c.x, c.y - 2)), 0);
+          }
+            if(!MoveValidator.checkWallsToTheLeft(c2, vW))
+            {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y - 1)), 0);
+            }
+            if(!MoveValidator.checkWallsToTheRight(c2, state.getVerticalWalls()))
+            {
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+            }
+          }
+        } else if (vectorToOpponent.x == 1 && vectorToOpponent.y == 0){ // opponent on the right
+        if(!MoveValidator.checkWallsToTheRight(c, vW)){
+          if(!MoveValidator.checkWallsToTheRight(c2, vW)){
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
+          }
+            if(!MoveValidator.checkWallsToTheTop(c2, hW)){
+              moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
+            }
+//            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
+//              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+//            }
+          }
+        } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
+        if(!MoveValidator.checkWallsToTheLeft(c, vW)){
+          if(!MoveValidator.checkWallsToTheLeft(c2, vW)){//jump ?
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
+          }
+
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
+            }
+
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
+            }
+          }
+        }
+      }
 
             return moves;
         }
@@ -223,19 +206,17 @@ namespace quoridor_webAPI.Data.Models
                 List<Coordinate> vMoveW = generateWalls();
                 List<Coordinate> hMoveW = generateWalls();
 
-                vW.ForEach((w) =>
-                {
-                    vMoveW.Remove(w);
-                    vMoveW.Remove(new Coordinate(w.x, w.y + 1));
-                    hMoveW.Remove(new Coordinate(w.x, w.y + 1));
-                });
+        vW.ForEach((w) => {
+          vMoveW.Remove(w);
+          vMoveW.Remove(new Coordinate(w.x, w.y + 1));
+          hMoveW.Remove(new Coordinate(w.x, w.y));
+        });
 
-                hW.ForEach((w) =>
-                {
-                    hMoveW.Remove(w);
-                    hMoveW.Remove(new Coordinate(w.x + 1, w.y));
-                    vMoveW.Remove(new Coordinate(w.x + 1, w.y));
-                });
+        hW.ForEach((w) => {
+          hMoveW.Remove(w);
+          hMoveW.Remove(new Coordinate(w.x + 1, w.y));
+          vMoveW.Remove(new Coordinate(w.x, w.y));
+        });
 
                 vMoveW.ForEach(w =>
                 {

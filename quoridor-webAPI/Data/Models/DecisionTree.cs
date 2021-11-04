@@ -10,26 +10,15 @@ namespace quoridor_webAPI.Data.Models
         public List<Node> children { get; set; }
         public Node parent { get; set; }
 
-        public Node(Move move, int rate)
-        {
-            this.move = move;
-            this.rate = rate;
-            this.children = new List<Node>();
-        }
-        public Node(Move move, int rate, Node parent)
-        {
-            this.move = move;
-            this.rate = rate;
-            this.children = new List<Node>();
-            this.parent = parent;
-        }
-        public void Insert(Node node)
-        {
-            children.Add(node);
-            //                children.Enqueue(node.rate, node);
-        }
+            public Node (Move move, int rate) {
+                this.move = move;
+                this.rate = rate;
+                this.children = new List<Node> ();
+            }
 
-
-
-    }
+            public void Insert(Node node) {
+                    children.Add(node);
+//                children.Enqueue(node.rate, node);
+            }
+        }
 }
