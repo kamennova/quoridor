@@ -95,12 +95,15 @@ namespace quoridor_webAPI.Data.Models {
           if(!MoveValidator.checkWallsToTheRight(c2, vW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
           }
-            if(!MoveValidator.checkWallsToTheTop(c2, hW)){
+            if(!MoveValidator.checkWallsToTheTop(c2, hW)
+            && !MoveValidator.checkWallsToTheTop(c, hW)){ // todo temp
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
-//            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
-//              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
-//            }
+            if(!MoveValidator.checkWallsToTheBottom(c2, hW)
+            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
+            ) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+            }
           }
         } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
         if(!MoveValidator.checkWallsToTheLeft(c, vW)){
@@ -108,11 +111,15 @@ namespace quoridor_webAPI.Data.Models {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
           }
 
-            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())
+            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
+            ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
 
-            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())
+            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
+            ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
             }
           }
@@ -144,17 +151,19 @@ namespace quoridor_webAPI.Data.Models {
       return distanceOpponent - distancePlayer;
     }
 
-    private static bool touchesBoard(Coordinate w) {
-        return w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7;
+    private static bool touchesBoard(Coordinate w, string wallType) {
+        return (wallType == "horizontal" && (w.x == 0 || w.x== 7)) || (wallType == "vertical" && (w.y == 0 || w.y == 7));
     }
 
     private static int verticalTouchesWallsNum(Coordinate w, GameState state) {
         int counter = 0;
-         if (touchesBoard(w)) {counter += 1;}
+         if (touchesBoard(w, "vertical")) {counter += 1;}
 
          counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
           if(counter < 2) {
-                    counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
+                    counter += state.getHorizontalWalls().Where(h => (h.x == w.x - 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1)) ||
+                    (h.x == w.x + 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1))
+                    ).Count();
                     }
 
         return counter;
@@ -162,9 +171,11 @@ namespace quoridor_webAPI.Data.Models {
 
      private static int horizontalTouchesWallsNum(Coordinate w, GameState state) {
             int counter = 0;
-             if (touchesBoard(w)) {counter += 1;}
+             if (touchesBoard(w, "horizontal")) {counter += 1;}
 
-             counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
+             counter += state.getVerticalWalls().Where(v => (v.y == w.y-1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1)) ||
+             (v.y == w.y+1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1))).Count();
+
               if(counter < 2) {
                         counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
                         }
@@ -188,12 +199,14 @@ namespace quoridor_webAPI.Data.Models {
         vW.ForEach((w) => {
           vMoveW.Remove(w);
           vMoveW.Remove(new Coordinate(w.x, w.y + 1));
+          vMoveW.Remove(new Coordinate(w.x, w.y - 1));
           hMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
         hW.ForEach((w) => {
           hMoveW.Remove(w);
           hMoveW.Remove(new Coordinate(w.x + 1, w.y));
+          hMoveW.Remove(new Coordinate(w.x - 1, w.y));
           vMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
@@ -201,11 +214,13 @@ namespace quoridor_webAPI.Data.Models {
           int rate = 0;
 
           // if touches other wall, check if can be passable with a star
-          if (verticalTouchesWallsNum(w, state) >= 2) {
-            rate = evaluateWallMove(state, turn);
-            if (rate < 0) {
+          if (verticalTouchesWallsNum(w, state) >= 2
+//          && touchesBoard(w, "vertical")
+          ) {
+//            rate = evaluateWallMove(state, turn);
+//            if (rate < 0) {
               return;
-            }
+//            }
           } else {
             // todo rate quick?
           }
@@ -215,11 +230,13 @@ namespace quoridor_webAPI.Data.Models {
 
         hMoveW.ForEach(w => {
           int rate = 0;
-          if (horizontalTouchesWallsNum(w, state) >= 2) {
-            rate = evaluateWallMove(state, turn);
-            if (rate < 0) {
+          if (horizontalTouchesWallsNum(w, state) >= 2
+//          && touchesBoard(w, "horizontal")
+          ) {
+//            rate = evaluateWallMove(state, turn);
+//            if (rate < 0) {
               return;
-            }
+//            }
           } else {
             // todo rate quick
           }
