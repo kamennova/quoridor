@@ -25,10 +25,10 @@ namespace quoridor_webAPI.Data.Models {
 
     private string coordToOut(Coordinate c, bool isWall) {
         if (isWall) {
-            return ((char) ((int) 'S' + c.x)) + ("" + (8-c.y));
+            return ((char) ((int) 'S' + c.x)).ToString() + ("" + (8-c.y));
         }
 
-        return ((char) ((int) 'A' + c.x)) + ("" + (9-c.y));
+        return ((char) ((int) 'A' + c.x)).ToString() + ("" + (9-c.y));
     }
 
     private static void log(String s) {
@@ -49,13 +49,16 @@ namespace quoridor_webAPI.Data.Models {
       return null;
     }
 
-    public void executeCommand(string[] input) {
+    public bool executeCommand(string[] input) {
       string command = input[0];
 
       if (command == "move" || command == "wall" || command == "jump") {
         Move move = getMove(input);
         string error = game.makeMove(move);
-        if (error != null) {Console.WriteLine(error);}
+        if (error != null) {Console.WriteLine(error); return false;}
+        return true;
+      } else {
+        return false;
       }
     }
 
@@ -101,7 +104,9 @@ namespace quoridor_webAPI.Data.Models {
 
       do {
         input = Console.ReadLine();
-        executeCommand(input.Split(" "));
+        if (!executeCommand(input.Split(" "))) {
+            return;
+        }
 
         if (!game.getIsOn() && game.winnerId != null) {
           log("Game over, winner: " + game.winnerId);
@@ -119,7 +124,7 @@ namespace quoridor_webAPI.Data.Models {
       } while (input != "exit" || !(!game.getIsOn() && game.winnerId != null));
     }
 
-    public static void Main(String[] args) {
+    public static void Main(string[] args) {
       GameCLI gameCli = new GameCLI();
       string input = Console.ReadLine();
       string color = (input == "white" || input == "black") ? input : args[0]; // todo lowercase?

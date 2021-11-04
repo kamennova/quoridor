@@ -20,10 +20,10 @@ namespace quoridor_webAPI.Data.Models {
 //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
         int temp = 0;
       foreach (var wall in walls) {
-      if (temp < 5) {
+//      if (temp < 80) {
         steps.Add(wall.Key, wall.Value);
         temp++;
-        }
+//        }
       }
 
       return steps;
@@ -98,9 +98,9 @@ namespace quoridor_webAPI.Data.Models {
             if(!MoveValidator.checkWallsToTheTop(c2, hW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
-            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
-              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
-            }
+//            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
+//              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+//            }
           }
         } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
         if(!MoveValidator.checkWallsToTheLeft(c, vW)){
