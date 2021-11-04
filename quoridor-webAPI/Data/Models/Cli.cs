@@ -104,7 +104,7 @@ namespace quoridor_webAPI.Data.Models {
 
       do {
         input = Console.ReadLine();
-        if (!executeCommand(input.Split(" "))) {
+        if (!executeCommand(input.Split(' '))) {
             break;
         }
 

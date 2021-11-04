@@ -53,6 +53,41 @@ namespace quoridor_webAPI.Data.Models
             _storage.Clear();
         }
 
+        public bool Contains(TPriority priority, TItem item)
+        {
+            if (_storage.Keys.Contains(priority))
+            {
+                return _storage[priority].Contains(item);
+            }
+            else { return false; }
+        }
+
+        public bool Contains(TItem item)
+        {
+            foreach (TPriority priority in _storage.Keys)
+            {
+                if (_storage[priority].Contains(item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool TryGetPriority(TItem item, out TPriority priority)
+        {
+            foreach (TPriority priorityVal in _storage.Keys)
+            {
+                if (_storage[priorityVal].Contains(item))
+                {
+                    priority = priorityVal;
+                    return true;
+                }
+            }
+            priority = _storage.Keys.Take(1).Last();
+            return false;
+        }
+
         public IEnumerator<KeyValuePair<TPriority, TItem>> GetEnumerator()
         {
             var items = from pair in _storage
@@ -61,7 +96,7 @@ namespace quoridor_webAPI.Data.Models
 
             return items.GetEnumerator();
         }
-        
+
         IEnumerator<TItem> IEnumerable<TItem>.GetEnumerator()
         {
             var items = _storage.SelectMany(pair => pair.Value);

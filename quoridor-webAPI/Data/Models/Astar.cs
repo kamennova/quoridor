@@ -11,7 +11,7 @@ namespace quoridor_webAPI.Data.Models
         //todo whith dicision tree for reconstruct path function
         Coordinate start, end, current;
         List<Move> closed;
-        Node theWay;
+        ANode theWay;
         PriorityQueue<int, Move> opened;
 
         public AStar(Coordinate start, GameState gameState)
@@ -20,7 +20,7 @@ namespace quoridor_webAPI.Data.Models
             current = start;
             end  = new Coordinate (start.x, Math.Abs(start.y - 8));
             this.gameState = gameState;
-            this.theWay = new Node(new Move("starter", null, start), 0);
+            this.theWay = new ANode(new Move("starter", null, start), 0);
             opened.Enqueue(0, new Move("starter", null, start));
         }
         // heuristic? 
@@ -55,9 +55,9 @@ namespace quoridor_webAPI.Data.Models
         {
             return MoveValidator.getPossibleSimpleStepMoves(c, gameState);
         }
-        public Node GetRoot()
+        public ANode GetRoot()
         {
-            Node temp = theWay;
+            ANode temp = theWay;
             while (temp.parent != null)
             {
                 temp = temp.parent;
@@ -70,13 +70,13 @@ namespace quoridor_webAPI.Data.Models
             closed.Add(temp);
             return temp;
         }
-        public Node GetWay()
+        public ANode GetWay()
         {
             
             while (opened.Count != 0)
             {
                 Move bestMove = opened.Dequeue();
-                theWay.Insert(new Node(bestMove, f(bestMove.coordinate)));
+                theWay.Insert(new ANode(bestMove, f(bestMove.coordinate)));
                 theWay = theWay.children[0];
                 current = bestMove.coordinate;
                 if (current == end)
