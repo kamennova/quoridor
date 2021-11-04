@@ -95,7 +95,7 @@ namespace quoridor_webAPI.Data.Models {
 
       do {
         input = Console.ReadLine();
-        executeCommand(input.Split(" "));
+        executeCommand(input.Split(' '));
 
         if (!game.getIsOn() && game.winnerId != null) {
           log("Game over, winner: " + game.winnerId);

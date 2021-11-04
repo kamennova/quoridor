@@ -16,7 +16,7 @@ namespace quoridor_webAPI.Data.Models
             this.rate = rate;
             this.children = new List<Node>();
         }
-        public Node(Move move, double rate, Node parent)
+        public Node(Move move, int rate, Node parent)
         {
             this.move = move;
             this.rate = rate;
