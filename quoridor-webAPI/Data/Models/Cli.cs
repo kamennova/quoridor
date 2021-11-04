@@ -105,12 +105,12 @@ namespace quoridor_webAPI.Data.Models {
       do {
         input = Console.ReadLine();
         if (!executeCommand(input.Split(" "))) {
-            return;
+            break;
         }
 
         if (!game.getIsOn() && game.winnerId != null) {
           log("Game over, winner: " + game.winnerId);
-          return;
+          break;
         }
 
         if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) { // todo
@@ -118,7 +118,7 @@ namespace quoridor_webAPI.Data.Models {
 
           if (!game.getIsOn() && game.winnerId != null) {
             log("Game over, winner: " + game.winnerId);
-            return;
+            break;
           }
         }
       } while (input != "exit" || !(!game.getIsOn() && game.winnerId != null));

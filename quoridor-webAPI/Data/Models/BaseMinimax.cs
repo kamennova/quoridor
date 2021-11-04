@@ -188,13 +188,13 @@ namespace quoridor_webAPI.Data.Models {
         vW.ForEach((w) => {
           vMoveW.Remove(w);
           vMoveW.Remove(new Coordinate(w.x, w.y + 1));
-          hMoveW.Remove(new Coordinate(w.x, w.y + 1));
+          hMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
         hW.ForEach((w) => {
           hMoveW.Remove(w);
           hMoveW.Remove(new Coordinate(w.x + 1, w.y));
-          vMoveW.Remove(new Coordinate(w.x + 1, w.y));
+          vMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
         vMoveW.ForEach(w => {
