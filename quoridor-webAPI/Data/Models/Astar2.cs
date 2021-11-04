@@ -44,28 +44,6 @@ namespace quoridor_webAPI.Data.Models
             return h() + g();
         }
 
-        void Show()
-        {
-            string[,] board = new string[9, 9];
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    board[i, j] = "_";
-                    if (closed.Contains(new Coordinate(i, j)))
-                    {
-                        board[i, j] = "C";
-                    }
-                    if (opened.Contains(new Coordinate(i, j)))
-                    {
-                        board[i, j] = "O";
-                    }
-                }
-            }
-            board[current.x, current.y] = "P";
-
-        }
-
         PriorityQueue<int, Coordinate> GetWay()
         {
             while (opened.Count != 0)
