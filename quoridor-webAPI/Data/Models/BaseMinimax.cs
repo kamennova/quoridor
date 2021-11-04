@@ -19,10 +19,8 @@ namespace quoridor_webAPI.Data.Models {
 //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
         int temp = 0;
       foreach (var wall in walls) {
-//      if (temp < 80) {
         steps.Add(wall.Key, wall.Value);
         temp++;
-//        }
       }
 
       return steps;
@@ -213,9 +211,7 @@ namespace quoridor_webAPI.Data.Models {
           int rate = 0;
 
           // if touches other wall, check if can be passable with a star
-          if (verticalTouchesWallsNum(w, state) >= 2
-//          && touchesBoard(w, "vertical")
-          ) {
+          if (verticalTouchesWallsNum(w, state) >= 2) {
 //            rate = evaluateWallMove(state, turn);
 //            if (rate < 0) {
               return;
@@ -229,9 +225,7 @@ namespace quoridor_webAPI.Data.Models {
 
         hMoveW.ForEach(w => {
           int rate = 0;
-          if (horizontalTouchesWallsNum(w, state) >= 2
-//          && touchesBoard(w, "horizontal")
-          ) {
+          if (horizontalTouchesWallsNum(w, state) >= 2) {
 //            rate = evaluateWallMove(state, turn);
 //            if (rate < 0) {
               return;
@@ -248,7 +242,7 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private static double fullEvaluate(Move move, GameState state, int turn, int distanceOpponent, int distancePlayer) {
-      return distanceOpponent - distancePlayer * 2 - 1; // -1 because next move is opponent's
+      return distanceOpponent - distancePlayer - 1; // -1 because next move is opponent's
     }
 
     private static void log(string text, int tab) {
