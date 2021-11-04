@@ -16,7 +16,6 @@ namespace quoridor_webAPI.Data.Models {
 //      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
 
       Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
-//      log("steps " + steps.Count + " walls " + walls.Count); // todo investigate wall moves
 //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
         int temp = 0;
       foreach (var wall in walls) {
@@ -95,13 +94,10 @@ namespace quoridor_webAPI.Data.Models {
           if(!MoveValidator.checkWallsToTheRight(c2, vW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
           }
-            if(!MoveValidator.checkWallsToTheTop(c2, hW)
-            && !MoveValidator.checkWallsToTheTop(c, hW)){ // todo temp
+            if(!MoveValidator.checkWallsToTheTop(c, hW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
-            if(!MoveValidator.checkWallsToTheBottom(c2, hW)
-            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
-            ) {
+            if(!MoveValidator.checkWallsToTheBottom(c, hW) ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
             }
           }
@@ -112,13 +108,13 @@ namespace quoridor_webAPI.Data.Models {
           }
 
             if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())
-            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
+//            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
             ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
 
             if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())
-            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
+//            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
             ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
             }
@@ -162,7 +158,8 @@ namespace quoridor_webAPI.Data.Models {
          counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
           if(counter < 2) {
                     counter += state.getHorizontalWalls().Where(h => (h.x == w.x - 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1)) ||
-                    (h.x == w.x + 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1))
+                    (h.x == w.x + 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1)) ||
+                    (h.x == w.x && (h.y == w.y - 1 || h.y == w.y + 1))
                     ).Count();
                     }
 
@@ -174,7 +171,9 @@ namespace quoridor_webAPI.Data.Models {
              if (touchesBoard(w, "horizontal")) {counter += 1;}
 
              counter += state.getVerticalWalls().Where(v => (v.y == w.y-1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1)) ||
-             (v.y == w.y+1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1))).Count();
+             (v.y == w.y+1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1)) ||
+             (v.y == w.y && (v.x == w.x - 1 || v.x == w.x + 1))
+             ).Count();
 
               if(counter < 2) {
                         counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
@@ -248,18 +247,8 @@ namespace quoridor_webAPI.Data.Models {
       return moves;
     }
 
-    private static int fullEvaluate(Move move, GameState state, int turn, int distanceOpponent, int distancePlayer) {
-      return distanceOpponent - distancePlayer - 1; // -1 because next move is opponent's
-    }
-
-    int EvaluateMove(Move move) {
-      if (move.type == "PutWall") {
-
-      } else {
-
-      }
-      //ehristic algorithm?
-      return 0;
+    private static double fullEvaluate(Move move, GameState state, int turn, int distanceOpponent, int distancePlayer) {
+      return distanceOpponent - distancePlayer * 2 - 1; // -1 because next move is opponent's
     }
 
     private static void log(string text, int tab) {
@@ -296,7 +285,7 @@ namespace quoridor_webAPI.Data.Models {
             distanceOpponent2 = AStar.search(state, opponent.coordinate, opponentGoal);
         }
 
-        int rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
+        double rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
 
         Node child = new Node(move.Key, rateFull);
         node.Insert(child);
