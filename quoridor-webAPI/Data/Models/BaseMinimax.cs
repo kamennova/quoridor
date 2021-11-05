@@ -20,14 +20,11 @@ namespace quoridor_webAPI.Data.Models
             //      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
 
       Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
-//      log("steps " + steps.Count + " walls " + walls.Count); // todo investigate wall moves
 //      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
         int temp = 0;
       foreach (var wall in walls) {
-//      if (temp < 80) {
         steps.Add(wall.Key, wall.Value);
         temp++;
-//        }
       }
 
             return steps;
@@ -106,12 +103,12 @@ namespace quoridor_webAPI.Data.Models
           if(!MoveValidator.checkWallsToTheRight(c2, vW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
           }
-            if(!MoveValidator.checkWallsToTheTop(c2, hW)){
+            if(!MoveValidator.checkWallsToTheTop(c, hW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
-//            if(!MoveValidator.checkWallsToTheBottom(c2, hW)) {
-//              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
-//            }
+            if(!MoveValidator.checkWallsToTheBottom(c, hW) ) {
+              moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
+            }
           }
         } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
         if(!MoveValidator.checkWallsToTheLeft(c, vW)){
@@ -119,11 +116,15 @@ namespace quoridor_webAPI.Data.Models
               moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
           }
 
-            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())
+//            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
+            ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
 
-            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())
+//            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
+            ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
             }
           }
@@ -158,21 +159,21 @@ namespace quoridor_webAPI.Data.Models
             return distanceOpponent - distancePlayer;
         }
 
-        private static bool touchesBoard(Coordinate w)
-        {
-            return w.x == 0 || w.y == 0 || w.x == 7 || w.y == 7;
-        }
+    private static bool touchesBoard(Coordinate w, string wallType) {
+        return (wallType == "horizontal" && (w.x == 0 || w.x== 7)) || (wallType == "vertical" && (w.y == 0 || w.y == 7));
+    }
 
-        private static int verticalTouchesWallsNum(Coordinate w, GameState state)
-        {
-            int counter = 0;
-            if (touchesBoard(w)) { counter += 1; }
+    private static int verticalTouchesWallsNum(Coordinate w, GameState state) {
+        int counter = 0;
+         if (touchesBoard(w, "vertical")) {counter += 1;}
 
-            counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
-            if (counter < 2)
-            {
-                counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
-            }
+         counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
+          if(counter < 2) {
+                    counter += state.getHorizontalWalls().Where(h => (h.x == w.x - 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1)) ||
+                    (h.x == w.x + 1 && (h.y == w.y - 1 || h.y == w.y || h.y == w.y + 1)) ||
+                    (h.x == w.x && (h.y == w.y - 1 || h.y == w.y + 1))
+                    ).Count();
+                    }
 
             return counter;
         }
@@ -180,13 +181,16 @@ namespace quoridor_webAPI.Data.Models
         private static int horizontalTouchesWallsNum(Coordinate w, GameState state)
         {
             int counter = 0;
-            if (touchesBoard(w)) { counter += 1; }
+             if (touchesBoard(w, "horizontal")) {counter += 1;}
 
-            counter += state.getVerticalWalls().Where(vOld => vOld.x == w.x && (vOld.y == w.y - 2 || vOld.y == w.y + 2)).Count();
-            if (counter < 2)
-            {
-                counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
-            }
+             counter += state.getVerticalWalls().Where(v => (v.y == w.y-1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1)) ||
+             (v.y == w.y+1 && (v.x == w.x - 1 || v.x == w.x || v.x == w.x+1)) ||
+             (v.y == w.y && (v.x == w.x - 1 || v.x == w.x + 1))
+             ).Count();
+
+              if(counter < 2) {
+                        counter += state.getHorizontalWalls().Where(hOld => hOld.y == w.y && (hOld.x == w.x - 2 || hOld.x == w.x + 2)).Count();
+                        }
 
             return counter;
         }
@@ -209,12 +213,14 @@ namespace quoridor_webAPI.Data.Models
         vW.ForEach((w) => {
           vMoveW.Remove(w);
           vMoveW.Remove(new Coordinate(w.x, w.y + 1));
+          vMoveW.Remove(new Coordinate(w.x, w.y - 1));
           hMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
         hW.ForEach((w) => {
           hMoveW.Remove(w);
           hMoveW.Remove(new Coordinate(w.x + 1, w.y));
+          hMoveW.Remove(new Coordinate(w.x - 1, w.y));
           vMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
@@ -222,69 +228,44 @@ namespace quoridor_webAPI.Data.Models
                 {
                     int rate = 0;
 
-                    // if touches other wall, check if can be passable with a star
-                    if (verticalTouchesWallsNum(w, state) >= 2)
-                    {
-                        rate = evaluateWallMove(state, turn);
-                        if (rate < 0)
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        // todo rate quick?
-                    }
-                    //          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
-                    moves.Add(new Move("PutWall", "vertical", w), rate);
-                });
+          // if touches other wall, check if can be passable with a star
+          if (verticalTouchesWallsNum(w, state) >= 2) {
+//            rate = evaluateWallMove(state, turn);
+//            if (rate < 0) {
+              return;
+//            }
+          } else {
+            // todo rate quick?
+          }
+//          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
+            moves.Add(new Move("PutWall", "vertical", w), rate);
+        });
 
-                hMoveW.ForEach(w =>
-                {
-                    int rate = 0;
-                    if (horizontalTouchesWallsNum(w, state) >= 2)
-                    {
-                        rate = evaluateWallMove(state, turn);
-                        if (rate < 0)
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        // todo rate quick
-                    }
-                    //          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
-                    moves.Add(new Move("PutWall", "horizontal", w), rate);
-                });
-            }
+        hMoveW.ForEach(w => {
+          int rate = 0;
+          if (horizontalTouchesWallsNum(w, state) >= 2) {
+//            rate = evaluateWallMove(state, turn);
+//            if (rate < 0) {
+              return;
+//            }
+          } else {
+            // todo rate quick
+          }
+//          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
+          moves.Add(new Move("PutWall", "horizontal", w), rate);
+        });
+      }
 
             return moves;
         }
 
-        private static int fullEvaluate(Move move, GameState state, int turn, int distanceOpponent, int distancePlayer)
-        {
-            return distanceOpponent - distancePlayer - 1; // -1 because next move is opponent's
-        }
+    private static double fullEvaluate(Move move, GameState state, int turn, int distanceOpponent, int distancePlayer) {
+      return distanceOpponent - distancePlayer - 1; // -1 because next move is opponent's
+    }
 
-        int EvaluateMove(Move move)
-        {
-            if (move.type == "PutWall")
-            {
-
-            }
-            else
-            {
-
-            }
-            //ehristic algorithm?
-            return 0;
-        }
-
-        private static void log(string text, int tab)
-        {
-            log(string.Concat(Enumerable.Repeat("   ", tab)) + tab + ") " + text);
-        }
+    private static void log(string text, int tab) {
+        log(string.Concat(Enumerable.Repeat("   ", tab)) + tab + ") " + text);
+    }
 
         private static void buildTree(Node node, GameState state, int turn, int depth)
         {
@@ -320,7 +301,7 @@ namespace quoridor_webAPI.Data.Models
                     distanceOpponent2 = AStar.search(state, opponent.coordinate, opponentGoal);
                 }
 
-                int rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
+        double rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
 
                 Node child = new Node(move.Key, rateFull);
                 node.Insert(child);

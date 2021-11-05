@@ -4,18 +4,18 @@ using System.Collections.Generic;
     
 namespace quoridor_webAPI.Data.Models
 {
-    public class PriorityQueue<TPriority, TItem> : IEnumerable<TItem>, IEnumerable<KeyValuePair<TPriority, TItem>>
+    public class PriorityQueue<TItem> : IEnumerable<TItem>, IEnumerable<KeyValuePair<int, TItem>>
     {
-        private readonly SortedDictionary<TPriority, Queue<TItem>> _storage;
+        private readonly SortedDictionary<int, Queue<TItem>> _storage;
 
-        public PriorityQueue() : this(Comparer<TPriority>.Default)
+        public PriorityQueue() : this(Comparer<int>.Default)
         {
 
         }
 
-        public PriorityQueue(IComparer<TPriority> comparer)
+        public PriorityQueue(IComparer<int> comparer)
         {
-            _storage = new SortedDictionary<TPriority, Queue<TItem>>(comparer);
+            _storage = new SortedDictionary<int, Queue<TItem>>(comparer);
         }
 
         public int Count
@@ -24,7 +24,7 @@ namespace quoridor_webAPI.Data.Models
             private set;
         }
 
-        public void Enqueue(TPriority priority, TItem item)
+        public void Enqueue(int priority, TItem item)
         {
             if (!_storage.TryGetValue(priority, out var queue))
                 _storage[priority] = queue = new Queue<TItem>();
@@ -33,13 +33,14 @@ namespace quoridor_webAPI.Data.Models
             Count++;
         }
 
-        public TItem Dequeue()
+        public TItem Dequeue(out int priority)
         {
             if (Count == 0)
                 throw new InvalidOperationException("Queue is empty");
 
             var queue = _storage.First();
             var item = queue.Value.Dequeue();
+            priority = queue.Key;
 
             if (queue.Value.Count == 0)
                 _storage.Remove(queue.Key);
@@ -48,12 +49,26 @@ namespace quoridor_webAPI.Data.Models
             return item;
         }
 
+        public TItem Dequeue() {
+                    if (Count == 0)
+                        throw new InvalidOperationException("Queue is empty");
+
+                    var queue = _storage.First();
+                    var item = queue.Value.Dequeue();
+
+                    if (queue.Value.Count == 0)
+                        _storage.Remove(queue.Key);
+
+                    Count--;
+                    return item;
+                }
+
         public void Clear()
         {
             _storage.Clear();
         }
 
-        public bool Contains(TPriority priority, TItem item)
+        public bool Contains(int priority, TItem item)
         {
             if (_storage.Keys.Contains(priority))
             {
@@ -62,9 +77,8 @@ namespace quoridor_webAPI.Data.Models
             else { return false; }
         }
 
-        public bool Contains(TItem item)
-        {
-            foreach (TPriority priority in _storage.Keys)
+        public bool Contains(TItem item) {
+            foreach (int priority in _storage.Keys)
             {
                 if (_storage[priority].Contains(item))
                 {
@@ -74,25 +88,26 @@ namespace quoridor_webAPI.Data.Models
             return false;
         }
 
-        public bool TryGetPriority(TItem item, out TPriority priority)
-        {
-            foreach (TPriority priorityVal in _storage.Keys)
+        public bool TryGetPriority(TItem item, out int priority) {
+            priority = -1;
+
+            foreach (int priorityVal in _storage.Keys)
             {
                 if (_storage[priorityVal].Contains(item))
                 {
+
                     priority = priorityVal;
                     return true;
                 }
             }
-            priority = _storage.Keys.Take(1).Last();
+
             return false;
         }
 
-        public IEnumerator<KeyValuePair<TPriority, TItem>> GetEnumerator()
-        {
+        public IEnumerator<KeyValuePair<int, TItem>> GetEnumerator() {
             var items = from pair in _storage
                         from item in pair.Value
-                        select new KeyValuePair<TPriority, TItem>(pair.Key, item);
+                        select new KeyValuePair<int, TItem>(pair.Key, item);
 
             return items.GetEnumerator();
         }
