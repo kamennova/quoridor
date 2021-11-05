@@ -1,89 +1,78 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace quoridor_webAPI.Data.Models
 {
-    class Astar2
+    class AStar
     {
-        PriorityQueue<int, Coordinate> closed;
-        PriorityQueue<int, Coordinate> opened;
-        ANode Way;
-        Coordinate current;
-        int finish;
-
-        public Astar2(Coordinate startPosition, int goalY)
-        {
-            closed = new PriorityQueue<int, Coordinate>();
-            opened = new PriorityQueue<int, Coordinate>();
-            current = startPosition;
-            this.finish = goalY;
-            opened.Enqueue(0, startPosition);
-        }
-
-        int ManhattenDistance(Coordinate start, Coordinate end)
+        private static int ManhattenDistance(Coordinate start, Coordinate end)
         {
             return Math.Abs(end.x - start.x) + Math.Abs(end.y - start.y);
         }
 
-        List<Move> GetPossibleMoves(Coordinate positopn)
-        {
-            return new List<Move>();
-        }
-
-        int g(/*Coordinate point*/)
+        private static int g(/*Coordinate point*/)
         {//way from current to point
             return 0;
         }
-        int h(/*Coordinate point*/)
+        private static int h(/*Coordinate point*/)
         {//way from point to end, presumably
             return 0;
         }
-        int f(Coordinate Move)
+        private static int f(Coordinate c)
         {
             return h() + g();
         }
 
-        PriorityQueue<int, Coordinate> GetWay()
-        {
-            while (opened.Count != 0)
-            {
-                Coordinate temp = opened.Dequeue();
-                ANode q = new ANode(temp, f(temp.coordinate));
-                foreach (Move move in GetPossibleMoves(q.move.coordinate))
-                {
-                    q.Insert(new ANode(move, f(move.coordinate)));
-                    if (finish == move.coordinate.y)
-                    {
-                        return closed;
-                    }
-                    if (opened.Contains(move))
-                    {
-                        int oldPriority;
-                        if (opened.TryGetPriority(move, out oldPriority))
-                        {
-                            if (oldPriority < f(move.coordinate))
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    if (closed.Contains(move.coordinate))
-                    {
-                        int oldPriority;
-                        if (closed.TryGetPriority(move.coordinate, out oldPriority))
-                        {
-                            if (oldPriority < f(move.coordinate))
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    opened.Enqueue(0, move);
-                }
-                closed.Enqueue(q.rate, q.move.coordinate);
+           private static void log(String s) {
+              Console.WriteLine(s);
             }
-            return closed;
+
+        public static int search(GameState state, Coordinate start, int goalY) {
+        return Math.Abs(start.y - goalY);
+        PriorityQueue<Coordinate> closed  = new PriorityQueue<Coordinate>();
+                PriorityQueue<Coordinate> opened = new PriorityQueue<Coordinate>();
+
+           opened.Enqueue(0, start);
+           int length = -1;
+
+            while (opened.Count != 0) {
+                int tempRate;
+                Coordinate temp = opened.Dequeue(out tempRate);
+
+                ANode q = new ANode(temp, f(temp));
+//                log("Opened: " + temp + " " + tempRate);
+
+                      if (temp.y == goalY) {
+                                        length = tempRate;
+                                        break;
+                      }
+
+                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp, state)) {
+//                    q.Insert(move.coordinate, f(move.coordinate));
+                        if(opened.Contains(move.coordinate)) {
+//                        int oldPriority = -1; // todo why?
+//                        if (opened.TryGetPriority(move.coordinate, out oldPriority)) {
+//                            if (oldPriority < f(move.coordinate)) {
+                                continue;
+//                            }
+//                        }
+                        } else if (closed.Contains(move.coordinate)) {
+//                        oldPriority = -1;
+//                        if (closed.TryGetPriority(move.coordinate, out oldPriority)) {
+//                            if (oldPriority < f(move.coordinate)) {
+//                                continue;
+//                            }
+//                        }
+                        } else {
+                        opened.Enqueue(tempRate + 1, move.coordinate);
+                        }
+                }
+
+                closed.Enqueue(tempRate, temp);
+            }
+
+            return length;
         }
     }
 }
