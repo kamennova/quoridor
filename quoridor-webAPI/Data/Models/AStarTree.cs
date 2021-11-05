@@ -25,8 +25,20 @@ namespace quoridor_webAPI.Data.Models
         }
         public void Insert(ANode node)
         {
+            node.parent = this;
             children.Add(node);
             //                children.Enqueue(node.rate, node);
+        }
+        public int GetWayLength()
+        {
+            ANode temp = this;
+            int counter = 0;
+            while (temp.parent != null)
+            {
+                counter++;
+                temp = temp.parent;
+            }
+            return counter;
         }
     }
 }

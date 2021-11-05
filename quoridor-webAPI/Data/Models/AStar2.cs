@@ -11,68 +11,79 @@ namespace quoridor_webAPI.Data.Models
             return Math.Abs(end.x - start.x) + Math.Abs(end.y - start.y);
         }
 
-        private static int g(/*Coordinate point*/)
+        private static int g(Coordinate point, Coordinate start)
         {//way from current to point
-            return 0;
+            return ManhattenDistance(start, point);
         }
-        private static int h(/*Coordinate point*/)
+        private static int h(Coordinate point, int goalY)
         {//way from point to end, presumably
-            return 0;
+            return ManhattenDistance(point, new Coordinate(point.x, goalY));
         }
-        private static int f(Coordinate c)
+        private static int f(Coordinate point, Coordinate start, int goalY)
         {
-            return h() + g();
+            return h(point, goalY) + g(point, start);
         }
 
-           private static void log(String s) {
-              Console.WriteLine(s);
-            }
+        private static void log(String s)
+        {
+            Console.WriteLine(s);
+        }
 
-        public static int search(GameState state, Coordinate start, int goalY) {
-        return Math.Abs(start.y - goalY);
-        PriorityQueue<Coordinate> closed  = new PriorityQueue<Coordinate>();
-                PriorityQueue<Coordinate> opened = new PriorityQueue<Coordinate>();
+        public static int search(GameState state, Coordinate start, int goalY)
+        {
+            return Math.Abs(start.y - goalY);
+            PriorityQueue<Coordinate> closed = new PriorityQueue<Coordinate>();
+            PriorityQueue<Coordinate> opened = new PriorityQueue<Coordinate>();
+            ANode aTree = new ANode(start, 0);
+            opened.Enqueue(0, start);
+            int length = -1;
 
-           opened.Enqueue(0, start);
-           int length = -1;
-
-            while (opened.Count != 0) {
+            while (opened.Count != 0)
+            {
                 int tempRate;
                 Coordinate temp = opened.Dequeue(out tempRate);
 
-                ANode q = new ANode(temp, f(temp));
-//                log("Opened: " + temp + " " + tempRate);
+                ANode q = new ANode(temp, f(temp, start, goalY));
+                //                log("Opened: " + temp + " " + tempRate);
 
-                      if (temp.y == goalY) {
-                                        length = tempRate;
-                                        break;
-                      }
+                if (temp.y == goalY)
+                {
+                    length = aTree.GetWayLength();
+                    break;
+                }
 
-                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp, state)) {
-//                    q.Insert(move.coordinate, f(move.coordinate));
-                        if(opened.Contains(move.coordinate)) {
-//                        int oldPriority = -1; // todo why?
-//                        if (opened.TryGetPriority(move.coordinate, out oldPriority)) {
-//                            if (oldPriority < f(move.coordinate)) {
-                                continue;
-//                            }
-//                        }
-                        } else if (closed.Contains(move.coordinate)) {
-//                        oldPriority = -1;
-//                        if (closed.TryGetPriority(move.coordinate, out oldPriority)) {
-//                            if (oldPriority < f(move.coordinate)) {
-//                                continue;
-//                            }
-//                        }
-                        } else {
-                        opened.Enqueue(tempRate + 1, move.coordinate);
-                        }
+                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp, state))
+                {
+                    //                    q.Insert(move.coordinate, f(move.coordinate));
+                    if (opened.Contains(move.coordinate))
+                    {
+                        //                        int oldPriority = -1; // todo why?
+                        //                        if (opened.TryGetPriority(move.coordinate, out oldPriority)) {
+                        //                            if (oldPriority < f(move.coordinate)) {
+                        continue;
+                        //                            }
+                        //                        }
+                    }
+                    else if (closed.Contains(move.coordinate))
+                    {
+                        //                        oldPriority = -1;
+                        //                        if (closed.TryGetPriority(move.coordinate, out oldPriority)) {
+                        //                            if (oldPriority < f(move.coordinate)) {
+                        continue;
+                        //                            }
+                        //                        }
+                    }
+                    else
+                    {
+                        opened.Enqueue(f(move.coordinate, start, goalY), move.coordinate);
+                    }
                 }
 
                 closed.Enqueue(tempRate, temp);
+                aTree = aTree.children[0];
             }
 
-            return length;
+            return aTree.GetWayLength(); ;
         }
     }
 }
