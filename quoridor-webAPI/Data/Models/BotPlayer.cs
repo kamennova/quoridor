@@ -12,7 +12,7 @@ namespace quoridor_webAPI.Data.Models
         }
 
         public Move getMove(GameState state) {
-            return BaseMinimax.ChooseMove(state, isWhite);
+            return BaseMinimax.ChooseMove(state, isWhite, 2);
         }
     }
 }

@@ -29,47 +29,33 @@ namespace quoridor_webAPI.Data.Models
             }
 
         public static int search(GameState state, Coordinate start, int goalY) {
-        return Math.Abs(start.y - goalY);
-        PriorityQueue<Coordinate> closed  = new PriorityQueue<Coordinate>();
-                PriorityQueue<Coordinate> opened = new PriorityQueue<Coordinate>();
+           PriorityQueue<ANode> closed = new PriorityQueue<ANode>();
+           PriorityQueue<ANode> opened = new PriorityQueue<ANode>();
 
-           opened.Enqueue(0, start);
+           opened.Enqueue(0, new ANode(start, 0));
            int length = -1;
+           int counter = 0;
 
             while (opened.Count != 0) {
+            counter++;
                 int tempRate;
-                Coordinate temp = opened.Dequeue(out tempRate);
+                ANode temp = opened.Dequeue(out tempRate);
+//                log("Opened: " + temp.coordinate + " " + tempRate + " " + temp.rate);
 
-                ANode q = new ANode(temp, f(temp));
-//                log("Opened: " + temp + " " + tempRate);
-
-                      if (temp.y == goalY) {
-                                        length = tempRate;
+                      if (temp.coordinate.y == goalY) {
+                                        length = temp.rate;
                                         break;
                       }
 
-                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp, state)) {
-//                    q.Insert(move.coordinate, f(move.coordinate));
-                        if(opened.Contains(move.coordinate)) {
-//                        int oldPriority = -1; // todo why?
-//                        if (opened.TryGetPriority(move.coordinate, out oldPriority)) {
-//                            if (oldPriority < f(move.coordinate)) {
+                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp.coordinate, state)) {
+                ANode searchNode = new ANode(move.coordinate, 0);
+                        if(opened.Contains(searchNode) || closed.Contains(searchNode)) {
                                 continue;
-//                            }
-//                        }
-                        } else if (closed.Contains(move.coordinate)) {
-//                        oldPriority = -1;
-//                        if (closed.TryGetPriority(move.coordinate, out oldPriority)) {
-//                            if (oldPriority < f(move.coordinate)) {
-//                                continue;
-//                            }
-//                        }
                         } else {
-                        opened.Enqueue(tempRate + 1, move.coordinate);
+                        opened.Enqueue(Math.Abs(move.coordinate.y - goalY) * 5 + temp.rate + 1, new ANode(move.coordinate, temp.rate + 1));
                         }
                 }
-
-                closed.Enqueue(tempRate, temp);
+                closed.Enqueue(temp.rate, temp);
             }
 
             return length;

@@ -91,30 +91,27 @@ namespace quoridor_webAPI.Data.Models {
         if(!MoveValidator.checkWallsToTheRight(c, vW)){
           if(!MoveValidator.checkWallsToTheRight(c2, vW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
-          }
+          } else {
             if(!MoveValidator.checkWallsToTheTop(c, hW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
             if(!MoveValidator.checkWallsToTheBottom(c, hW) ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
             }
+            }
           }
         } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
         if(!MoveValidator.checkWallsToTheLeft(c, vW)){
           if(!MoveValidator.checkWallsToTheLeft(c2, vW)){//jump ?
               moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
-          }
-
-            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())
-//            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
-            ) {
+          } else {
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
 
-            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())
-//            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
-            ) {
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
+            }
             }
           }
         }
@@ -264,7 +261,7 @@ namespace quoridor_webAPI.Data.Models {
             int playerGoal = player.color == "white" ? 8 : 0;
             int opponentGoal = opponent.color == "white" ? 8 : 0;
 
-            int distancePlayer = AStar.search(state, player.coordinate, playerGoal);
+//            int distancePlayer = AStar.search(state, player.coordinate, playerGoal);
             int distanceOpponent = AStar.search(state, opponent.coordinate, opponentGoal);
 
       foreach (var move in possibleMoves) {
@@ -304,7 +301,11 @@ namespace quoridor_webAPI.Data.Models {
       return isRoot ? max : node;
     }
 
-    public static Move ChooseMove(GameState state, bool isWhite) {
+    public static Move ChooseMove(GameState state, bool isWhite, int moveIndex) {
+        if (moveIndex == 0 && isWhite) {
+            return new Move("Step", null, new Coordinate(4, 1));
+        }
+
       int turn = isWhite ? 0 : 1;
       Move zeroMove = new Move("null", "null", new Coordinate(0, 0));
       Node root = new Node(zeroMove, 0);
