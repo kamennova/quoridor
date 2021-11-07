@@ -1,2 +1,2 @@
 #!/bin/bash
-mono AAA.cs "$1" "no-log"
+mono Bot.exe "$1" "no-log"

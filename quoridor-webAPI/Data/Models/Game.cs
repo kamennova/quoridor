@@ -10,7 +10,6 @@ namespace quoridor_webAPI.Data.Models {
     private bool isOn = false;
     private int currentTurn = 0;
     public bool doLog = true;
-    public int moveCounter = 0;
     public GameState state = new GameState();
 
     public int getWinnerId() {
@@ -165,7 +164,7 @@ namespace quoridor_webAPI.Data.Models {
       } else {
         currentTurn = currentTurn == 0 ? 1 : 0;
       }
-      moveCounter++;
+      state.moveIndex++;
 
       return null;
     }

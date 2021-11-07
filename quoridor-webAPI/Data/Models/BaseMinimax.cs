@@ -11,16 +11,10 @@ namespace quoridor_webAPI.Data.Models {
 
     public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
       Dictionary < Move, int > steps = getPossibleStepMoves(state, turn);
-
-//    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board state, List < Player > players) {
-//      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
-
       Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
-//      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
-        int temp = 0;
+
       foreach (var wall in walls) {
         steps.Add(wall.Key, wall.Value);
-        temp++;
       }
 
       return steps;
@@ -40,11 +34,8 @@ namespace quoridor_webAPI.Data.Models {
     private static Dictionary < Move, int > getPossibleStepMoves(GameState state, int turn) {
       PlayerState player = state.getPlayer(turn);
 
-//    private static PriorityQueue < Move, int > getPossibleStepMoves(Player player, Board state, List < Player > players) {
-
       Coordinate c = player.coordinate;
       Coordinate c2 = state.getOpponent(turn).coordinate;
-//      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
       Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
       MoveValidator.getPossibleSimpleStepMoves(c, state).ForEach(m => {
@@ -206,31 +197,11 @@ namespace quoridor_webAPI.Data.Models {
 
         vMoveW.ForEach(w => {
           int rate = 0;
-
-          // if touches other wall, check if can be passable with a star
-          if (verticalTouchesWallsNum(w, state) >= 2) {
-//            rate = evaluateWallMove(state, turn);
-//            if (rate < 0) {
-              return;
-//            }
-          } else {
-            // todo rate quick?
-          }
-//          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
             moves.Add(new Move("PutWall", "vertical", w), rate);
         });
 
         hMoveW.ForEach(w => {
           int rate = 0;
-          if (horizontalTouchesWallsNum(w, state) >= 2) {
-//            rate = evaluateWallMove(state, turn);
-//            if (rate < 0) {
-              return;
-//            }
-          } else {
-            // todo rate quick
-          }
-//          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
           moves.Add(new Move("PutWall", "horizontal", w), rate);
         });
       }
@@ -247,8 +218,6 @@ namespace quoridor_webAPI.Data.Models {
     }
 
     private static void buildTree(Node node, GameState state, int turn, int depth) {
-      // log("=============== depth " + depth + " ====, move: " + node.move.type + " " + node.move.coordinate + (turn == 0 ? "white" : "black") + " eval " + node.rate, 2 - depth);
-
       if (depth == 0) {
         return;
       }
@@ -260,20 +229,19 @@ namespace quoridor_webAPI.Data.Models {
 
             int playerGoal = player.color == "white" ? 8 : 0;
             int opponentGoal = opponent.color == "white" ? 8 : 0;
-
-//            int distancePlayer = AStar.search(state, player.coordinate, playerGoal);
             int distanceOpponent = AStar.search(state, opponent.coordinate, opponentGoal);
 
       foreach (var move in possibleMoves) {
       GameState newState = state.applyMoveToNew(move.Key, turn);
 
         int distancePlayer2 = AStar.search(newState, newState.getPlayer(turn).coordinate, playerGoal);
+        if (distancePlayer2 < 0) continue;
         int distanceOpponent2 = distanceOpponent;
-//       log(" move test " + move.Key + " dist2 " + distancePlayer2 + " " + distanceOpponent2, 2 - depth);
 
          // opponent's distance to goal may change
         if (move.Key.type == "PutWall" || MoveValidator.isOpponentNear(state, move.Key.coordinate, turn)) {
             distanceOpponent2 = AStar.search(state, opponent.coordinate, opponentGoal);
+            if (distanceOpponent2 < 0) continue;
         }
 
         double rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
@@ -301,12 +269,7 @@ namespace quoridor_webAPI.Data.Models {
       return isRoot ? max : node;
     }
 
-    public static Move ChooseMove(GameState state, bool isWhite, int moveIndex) {
-        if (moveIndex == 0 && isWhite) {
-            return new Move("Step", null, new Coordinate(4, 1));
-        }
-
-      int turn = isWhite ? 0 : 1;
+    public static Move ChooseMove(GameState state, int turn) {
       Move zeroMove = new Move("null", "null", new Coordinate(0, 0));
       Node root = new Node(zeroMove, 0);
       buildTree(root, state, turn, 2);
