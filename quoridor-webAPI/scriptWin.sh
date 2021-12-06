@@ -1,1 +1,0 @@
-Cli.exe "$1" "no-log"
