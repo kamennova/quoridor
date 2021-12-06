@@ -164,6 +164,7 @@ namespace quoridor_webAPI.Data.Models {
       } else {
         currentTurn = currentTurn == 0 ? 1 : 0;
       }
+      state.moveIndex++;
 
       return null;
     }

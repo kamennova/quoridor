@@ -113,7 +113,7 @@ namespace quoridor_webAPI.Data.Models {
           break;
         }
 
-        if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) { // todo
+        if (bot.isWhite && game.getTurn() == 0 || !bot.isWhite && game.getTurn() == 1) {
           move();
 
           if (!game.getIsOn() && game.winnerId != null) {

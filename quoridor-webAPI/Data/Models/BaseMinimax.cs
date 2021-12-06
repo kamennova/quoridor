@@ -12,19 +12,12 @@ namespace quoridor_webAPI.Data.Models
             if (doLog) { Console.WriteLine(s); }
         }
 
-        public static Dictionary<Move, int> getPossibleMoves(GameState state, int turn)
-        {
-            Dictionary<Move, int> steps = getPossibleStepMoves(state, turn);
-
-            //    public static PriorityQueue < Move, int > getPossibleMoves(Player player, Board state, List < Player > players) {
-            //      PriorityQueue < Move, int > steps = getPossibleStepMoves(player, state, players);
-
+    public static Dictionary < Move, int > getPossibleMoves(GameState state, int turn) {
+      Dictionary < Move, int > steps = getPossibleStepMoves(state, turn);
       Dictionary < Move, int > walls = getPossibleWallMoves(state, turn);
-//      PriorityQueue < Move, int > walls = getPossibleWallMoves(player, state, players);
-        int temp = 0;
+
       foreach (var wall in walls) {
         steps.Add(wall.Key, wall.Value);
-        temp++;
       }
 
             return steps;
@@ -48,12 +41,9 @@ namespace quoridor_webAPI.Data.Models
         {
             PlayerState player = state.getPlayer(turn);
 
-            //    private static PriorityQueue < Move, int > getPossibleStepMoves(Player player, Board state, List < Player > players) {
-
-            Coordinate c = player.coordinate;
-            Coordinate c2 = state.getOpponent(turn).coordinate;
-            //      PriorityQueue < Move, int > moves = new PriorityQueue < Move, int > ();
-            Dictionary<Move, int> moves = new Dictionary<Move, int>();
+      Coordinate c = player.coordinate;
+      Coordinate c2 = state.getOpponent(turn).coordinate;
+      Dictionary < Move, int > moves = new Dictionary < Move, int > ();
 
             MoveValidator.getPossibleSimpleStepMoves(c, state).ForEach(m =>
             {
@@ -102,30 +92,27 @@ namespace quoridor_webAPI.Data.Models
         if(!MoveValidator.checkWallsToTheRight(c, vW)){
           if(!MoveValidator.checkWallsToTheRight(c2, vW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x + 2, c.y)), 0);
-          }
+          } else {
             if(!MoveValidator.checkWallsToTheTop(c, hW)){
               moves.Add(new Move("Move", null, new Coordinate(c.x+1, c.y + 1)), 0);
             }
             if(!MoveValidator.checkWallsToTheBottom(c, hW) ) {
               moves.Add(new Move("Move", null, new Coordinate(c.x + 1, c.y - 1)), 0);
             }
+            }
           }
         } else if (vectorToOpponent.x == -1 && vectorToOpponent.y == 0){ // opponent on the left
         if(!MoveValidator.checkWallsToTheLeft(c, vW)){
           if(!MoveValidator.checkWallsToTheLeft(c2, vW)){//jump ?
               moves.Add(new Move("Move", null, new Coordinate(c.x - 2, c.y)), 0);
-          }
-
-            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())
-//            && !MoveValidator.checkWallsToTheTop(c, hW) // todo temp
-            ) {
+          } else {
+            if(!MoveValidator.checkWallsToTheTop(c2, state.getHorizontalWalls())) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y + 1)), 0);
             }
 
-            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())
-//            && !MoveValidator.checkWallsToTheBottom(c, hW) // todo temp
-            ) {
+            if(!MoveValidator.checkWallsToTheBottom(c2, state.getHorizontalWalls())) {
               moves.Add(new Move("Move", null, new Coordinate(c.x - 1, c.y -1 )), 0);
+            }
             }
           }
         }
@@ -224,34 +211,13 @@ namespace quoridor_webAPI.Data.Models
           vMoveW.Remove(new Coordinate(w.x, w.y));
         });
 
-                vMoveW.ForEach(w =>
-                {
-                    int rate = 0;
-
-          // if touches other wall, check if can be passable with a star
-          if (verticalTouchesWallsNum(w, state) >= 2) {
-//            rate = evaluateWallMove(state, turn);
-//            if (rate < 0) {
-              return;
-//            }
-          } else {
-            // todo rate quick?
-          }
-//          moves.Enqueue(new Move("PutWall", "vertical", w), rate);
+        vMoveW.ForEach(w => {
+          int rate = 0;
             moves.Add(new Move("PutWall", "vertical", w), rate);
         });
 
         hMoveW.ForEach(w => {
           int rate = 0;
-          if (horizontalTouchesWallsNum(w, state) >= 2) {
-//            rate = evaluateWallMove(state, turn);
-//            if (rate < 0) {
-              return;
-//            }
-          } else {
-            // todo rate quick
-          }
-//          moves.Enqueue(new Move("PutWall", "horizontal", w), rate);
           moves.Add(new Move("PutWall", "horizontal", w), rate);
         });
       }
@@ -267,14 +233,10 @@ namespace quoridor_webAPI.Data.Models
         log(string.Concat(Enumerable.Repeat("   ", tab)) + tab + ") " + text);
     }
 
-        private static void buildTree(Node node, GameState state, int turn, int depth)
-        {
-            // log("=============== depth " + depth + " ====, move: " + node.move.type + " " + node.move.coordinate + (turn == 0 ? "white" : "black") + " eval " + node.rate, 2 - depth);
-
-            if (depth == 0)
-            {
-                return;
-            }
+    private static void buildTree(Node node, GameState state, int turn, int depth) {
+      if (depth == 0) {
+        return;
+      }
 
             Dictionary<Move, int> possibleMoves = getPossibleMoves(state, turn);
 
@@ -283,23 +245,21 @@ namespace quoridor_webAPI.Data.Models
 
             int playerGoal = player.color == "white" ? 8 : 0;
             int opponentGoal = opponent.color == "white" ? 8 : 0;
-
-            int distancePlayer = AStar.search(state, player.coordinate, playerGoal);
             int distanceOpponent = AStar.search(state, opponent.coordinate, opponentGoal);
 
             foreach (var move in possibleMoves)
             {
                 GameState newState = state.applyMoveToNew(move.Key, turn);
 
-                int distancePlayer2 = AStar.search(newState, newState.getPlayer(turn).coordinate, playerGoal);
-                int distanceOpponent2 = distanceOpponent;
-                //       log(" move test " + move.Key + " dist2 " + distancePlayer2 + " " + distanceOpponent2, 2 - depth);
+        int distancePlayer2 = AStar.search(newState, newState.getPlayer(turn).coordinate, playerGoal);
+        if (distancePlayer2 < 0) continue;
+        int distanceOpponent2 = distanceOpponent;
 
-                // opponent's distance to goal may change
-                if (move.Key.type == "PutWall" || MoveValidator.isOpponentNear(state, move.Key.coordinate, turn))
-                {
-                    distanceOpponent2 = AStar.search(state, opponent.coordinate, opponentGoal);
-                }
+         // opponent's distance to goal may change
+        if (move.Key.type == "PutWall" || MoveValidator.isOpponentNear(state, move.Key.coordinate, turn)) {
+            distanceOpponent2 = AStar.search(state, opponent.coordinate, opponentGoal);
+            if (distanceOpponent2 < 0) continue;
+        }
 
         double rateFull = fullEvaluate(move.Key, newState, turn, distanceOpponent2, distancePlayer2);
 
@@ -330,14 +290,12 @@ namespace quoridor_webAPI.Data.Models
             return isRoot ? max : node;
         }
 
-        public static Move ChooseMove(GameState state, bool isWhite)
-        {
-            int turn = isWhite ? 0 : 1;
-            Move zeroMove = new Move("null", "null", new Coordinate(0, 0));
-            Node root = new Node(zeroMove, 0);
-            buildTree(root, state, turn, 2);
-            Node best = selectNode(root, true, true);
-            log("best " + best.move.type + " " + best.move.coordinate + " " + best.rate);
+    public static Move ChooseMove(GameState state, int turn) {
+      Move zeroMove = new Move("null", "null", new Coordinate(0, 0));
+      Node root = new Node(zeroMove, 0);
+      buildTree(root, state, turn, 2);
+      Node best = selectNode(root, true, true);
+      log("best " + best.move.type + " " + best.move.coordinate + " " + best.rate);
 
             return best.move;
         }

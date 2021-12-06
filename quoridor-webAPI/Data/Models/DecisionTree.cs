@@ -6,7 +6,6 @@ namespace quoridor_webAPI.Data.Models
         {
             public Move move { get; }
             public double rate;
-//            public PriorityQueue<int, Node> children { get; set; }
             public List<Node> children { get; set; }
 
             public Node (Move move, double rate) {
@@ -17,7 +16,6 @@ namespace quoridor_webAPI.Data.Models
 
             public void Insert(Node node) {
                     children.Add(node);
-//                children.Enqueue(node.rate, node);
             }
         }
 }

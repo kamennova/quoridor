@@ -29,58 +29,34 @@ namespace quoridor_webAPI.Data.Models
             Console.WriteLine(s);
         }
 
-        public static int search(GameState state, Coordinate start, int goalY)
-        {
-            return Math.Abs(start.y - goalY);
-            PriorityQueue<Coordinate> closed = new PriorityQueue<Coordinate>();
-            PriorityQueue<Coordinate> opened = new PriorityQueue<Coordinate>();
-            ANode aTree = new ANode(start, 0);
-            opened.Enqueue(0, start);
-            int length = -1;
+        public static int search(GameState state, Coordinate start, int goalY) {
+           PriorityQueue<ANode> closed = new PriorityQueue<ANode>();
+           PriorityQueue<ANode> opened = new PriorityQueue<ANode>();
 
-            while (opened.Count != 0)
-            {
+           opened.Enqueue(0, new ANode(start, 0));
+           int length = -1;
+           int counter = 0;
+
+            while (opened.Count != 0) {
+            counter++;
                 int tempRate;
-                Coordinate temp = opened.Dequeue(out tempRate);
+                ANode temp = opened.Dequeue(out tempRate);
+//                log("Opened: " + temp.coordinate + " " + tempRate + " " + temp.rate);
 
-                ANode q = new ANode(temp, f(temp, start, goalY));
-                //                log("Opened: " + temp + " " + tempRate);
+                      if (temp.coordinate.y == goalY) {
+                                        length = temp.rate;
+                                        break;
+                      }
 
-                if (temp.y == goalY)
-                {
-                    length = aTree.GetWayLength();
-                    break;
+                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp.coordinate, state)) {
+                ANode searchNode = new ANode(move.coordinate, 0);
+                        if(opened.Contains(searchNode) || closed.Contains(searchNode)) {
+                                continue;
+                        } else {
+                        opened.Enqueue(Math.Abs(move.coordinate.y - goalY) * 5 + temp.rate + 1, new ANode(move.coordinate, temp.rate + 1));
+                        }
                 }
-
-                foreach (Move move in MoveValidator.getPossibleSimpleStepMoves(temp, state))
-                {
-                    //                    q.Insert(move.coordinate, f(move.coordinate));
-                    if (opened.Contains(move.coordinate))
-                    {
-                        //                        int oldPriority = -1; // todo why?
-                        //                        if (opened.TryGetPriority(move.coordinate, out oldPriority)) {
-                        //                            if (oldPriority < f(move.coordinate)) {
-                        continue;
-                        //                            }
-                        //                        }
-                    }
-                    else if (closed.Contains(move.coordinate))
-                    {
-                        //                        oldPriority = -1;
-                        //                        if (closed.TryGetPriority(move.coordinate, out oldPriority)) {
-                        //                            if (oldPriority < f(move.coordinate)) {
-                        continue;
-                        //                            }
-                        //                        }
-                    }
-                    else
-                    {
-                        opened.Enqueue(f(move.coordinate, start, goalY), move.coordinate);
-                    }
-                }
-
-                closed.Enqueue(tempRate, temp);
-                aTree = aTree.children[0];
+                closed.Enqueue(temp.rate, temp);
             }
 
             return aTree.GetWayLength(); ;

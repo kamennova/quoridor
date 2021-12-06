@@ -9,6 +9,7 @@ namespace quoridor_webAPI.Data.Models {
     public List < Coordinate > verticalWalls = new List < Coordinate > ();
     public PlayerState blackState = new PlayerState(new Coordinate(4, 8), "black");
     public PlayerState whiteState = new PlayerState(new Coordinate(4, 0), "white");
+    public int moveIndex = 0;
 
     public PlayerState getPlayer(int turn) {
       return turn == 0 ? whiteState : blackState;
