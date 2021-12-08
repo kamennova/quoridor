@@ -124,15 +124,17 @@ namespace quoridor_webAPI.Data.Models {
       } while (input != "exit" || !(!game.getIsOn() && game.winnerId != null));
     }
 
-        public static void Main(string[] args){
-            //string[] args = { "black" };
-            GameCLI gameCli = new GameCLI();
-            string input = Console.ReadLine();
-            input = input.ToLower();
-            string color = (input == "white" || input == "black") ? input : args[0];
-            doLog = false;
-            BaseMinimax.doLog = false;       
-            gameCli.run(color);
-        }
+    public static void Main(string[] args) {
+      GameCLI gameCli = new GameCLI();
+      string input = Console.ReadLine();
+      string color = (input == "white" || input == "black") ? input : args[0]; // todo lowercase?
+
+      if (args[1] == "no-log") {
+        doLog = false;
+        BaseMinimax.doLog = false;
+      }
+
+      gameCli.run(color);
     }
+  }
 }
