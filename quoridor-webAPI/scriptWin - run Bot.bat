@@ -1,0 +1,1 @@
+START Bot.exe %1 no-log
