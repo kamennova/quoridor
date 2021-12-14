@@ -1,4 +1,4 @@
 ECHO Script started
-START .\Quoridor.AiTester.exe  --command Cli.exe -f
+START Cli.exe lala no-log
 ECHO Script finished
 PAUSE

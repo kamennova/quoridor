@@ -1,1 +1,1 @@
-START Cli.exe %1 no-log
+START Cli.exe lala no-log
