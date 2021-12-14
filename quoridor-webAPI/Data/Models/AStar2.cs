@@ -24,6 +24,7 @@ namespace quoridor_webAPI.Data.Models
             return h() + g();
         }
 
+
            private static void log(String s) {
               Console.WriteLine(s);
             }
